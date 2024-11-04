@@ -2,14 +2,16 @@ const mongoose = require('mongoose');
 
 // User Schema
 const userSchema = new mongoose.Schema({
-  googleId: String || null,
+  googleId: { type: String, default: null },
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['Admin', 'Instructor', 'Student'], default: 'Student' },
-  profileImage: String,
-  enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]
-}, { timestamps: true });
+  profileImage: { type: String, default: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' },
+  enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course', default: [] }]
+},
+ { timestamps: true }
+);
 
 // Course Schema
 const courseSchema = new mongoose.Schema({
