@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../model/Model');
 const dotenv = require('dotenv');
 const upload = require('../middleware/upload');
-const bunnyStorage = require('../utils/bunnycdn');
+const { uploadToSupabase } = require('../utils/supabase');
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -20,14 +20,13 @@ exports.register = async (req, res) => {
 
     let profileImageUrl = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'; // default image
 
-    // Handle file upload to Bunny CDN if file exists
+    // Handle file upload to Supabase Storage if file exists
     if (req.file) {
       const fileName = `${Date.now()}-${req.file.originalname}`;
-      await bunnyStorage.uploadToBunny(
+      profileImageUrl = await uploadToSupabase(
         req.file.buffer,
-        `/profiles/${fileName}`
+        fileName
       );
-      profileImageUrl = `${process.env.BUNNY_CDN_URL}/profiles/${fileName}`;
     }
 
     const existingUser = await User.findOne({ email });
@@ -90,14 +89,13 @@ exports.updateProfile = async (req, res) => {
     const { name, email } = req.body;
     let profileImageUrl = req.body.profileImage; // Keep existing image if no new upload
 
-    // Handle file upload to Bunny CDN
+    // Handle file upload to Supabase Storage
     if (req.file) {
       const fileName = `${Date.now()}-${req.file.originalname}`;
-      await bunnyStorage.upload(
+      profileImageUrl = await uploadToSupabase(
         req.file.buffer,
-        `/profiles/${fileName}`
+        fileName
       );
-      profileImageUrl = `${process.env.BUNNY_CDN_URL}/profiles/${fileName}`;
     }
 
     const updatedUser = await User.findByIdAndUpdate(
