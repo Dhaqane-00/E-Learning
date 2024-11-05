@@ -27,7 +27,7 @@ const courseSchema = new mongoose.Schema({
 
 // Module Schema
 const moduleSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  title: { type: String, required: true },//part1
   description: String,
   lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson', default: [] }]
 }, { timestamps: true });
@@ -60,7 +60,8 @@ const enrollmentSchema = new mongoose.Schema({
   quizScores: [{
     lesson: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' },
     score: Number
-  }]
+  }],
+  paymentStatus: { type: String, enum: ['Pending', 'Paid'], default: 'Pending' }
 }, { timestamps: true });
 
 // Models
