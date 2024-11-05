@@ -20,8 +20,8 @@ const courseSchema = new mongoose.Schema({
   instructor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   price: { type: Number, default: 0 },
   category: String,
-  thumbnailImage: String,
-  modules: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Module' }],
+  thumbnailImage: { type: String, default: 'https://cdn.pixabay.com/photo/2022/01/28/12/17/distance-learning-6974511_1280.jpg' },
+  modules: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Module', default: [] }],
   tags: [String]
 }, { timestamps: true });
 
@@ -29,7 +29,7 @@ const courseSchema = new mongoose.Schema({
 const moduleSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: String,
-  lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }]
+  lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson', default: [] }]
 }, { timestamps: true });
 
 // Lesson Schema

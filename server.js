@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const userRouter = require('./src/routes/userRouter');
+const courseRouter = require('./src/routes/CourseRouter');
 const app = express();
 require('dotenv').config();
 const cors = require('cors');
@@ -23,8 +24,9 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
-
+//routes
 app.use('/api/users', userRouter);
+app.use('/api/courses', courseRouter);
 
 
 
