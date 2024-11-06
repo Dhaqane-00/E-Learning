@@ -4,7 +4,7 @@ const bunnyStorage = require('../utils/bunnycdn');
 exports.createCourse = async (req, res) => {
   try {
     const { title, description, price, category, tags } = req.body;
-    const instructor = req.params.id; // From auth middleware
+    const instructor = req.user.userId; // From auth middleware
 
     // Handle file upload to Bunny CDN on thumbnailImage
     let thumbnailImage = 'https://cdn.pixabay.com/photo/2022/01/28/12/17/distance-learning-6974511_1280.jpg';
@@ -36,11 +36,11 @@ exports.createCourse = async (req, res) => {
   }
 };
 
-// Get all courses
+// Get all courses with instructor details and without modules
 exports.getAllCourses = async (req, res) => {
   try {
     const courses = await Course.find()
-      .populate('instructor', 'name email profileImage')
+      .populate('instructor', 'name email role profileImage')
       .select('-modules');
     res.json(courses);
   } catch (error) {
@@ -48,7 +48,7 @@ exports.getAllCourses = async (req, res) => {
   }
 };
 
-// Get course by ID
+// Get course by ID with instructor details and modules
 exports.getCourseById = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id)

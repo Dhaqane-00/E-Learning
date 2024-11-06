@@ -24,12 +24,18 @@ exports.authenticate = async (req, res, next) => {
   }
 };
 
-// Optional: Role-based authentication
-exports.authorize = (roles = []) => {
+// Role-based authorization middleware
+exports.authorize = (allowedRoles = []) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+    if (!req.user) {
+      return res.status(401).json({ 
+        message: 'User not authenticated' 
+      });
+    }
+
+    if (!allowedRoles.includes(req.user.role)) {
       return res.status(403).json({ 
-        message: 'You do not have permission to perform this action'
+        message: 'You do not have permission to perform this action' 
       });
     }
     next();
