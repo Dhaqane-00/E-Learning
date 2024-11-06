@@ -54,23 +54,23 @@ A robust and scalable Learning Management System (LMS) backend built with Node.j
 ## 📦 Project Structure 
 
 ├── src/
-│ ├── controllers/
-│ │ ├── User.js
-│ │ ├── Course.js
-│ │ ├── CourseModule.js
-│ │ └── Lesson.js
-│ ├── middleware/
-│ │ ├── auth.js
-│ │ └── upload.js
-│ ├── models/
-│ │ └── Model.js
-│ ├── routes/
-│ │ ├── userRouter.js
-│ │ ├── courseRouter.js
-│ │ ├── moduleRouter.js
-│ │ └── lessonRouter.js
-│ └── utils/
-│ └── bunnycdn.js
+│   ├── controllers/
+│   │   ├── User.js
+│   │   ├── Course.js
+│   │   ├── Module.js
+│   │   └── Lesson.js
+│   ├── middleware/
+│   │   ├── auth.js
+│   │   └── upload.js
+│   ├── models/
+│   │   └── Model.js
+│   ├── routes/
+│   │   ├── userRouter.js
+│   │   ├── CourseRouter.js
+│   │   ├── ModuleRouter.js
+│   │   └── LessonRouter.js
+│   └── utils/
+│       └── bunnycdn.js
 ├── server.js
 ├── package.json
 └── README.md
@@ -88,17 +88,17 @@ Create a `.env` file in the root directory:
 
 ### env
 - MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-BUNNY_STORAGE_API_KEY=your_bunny_api_key
-BUNNY_STORAGE_ZONE_NAME=your_storage_zone
-BUNNY_CDN_URL=your_cdn_url
+- JWT_SECRET=your_jwt_secret_key
+- BUNNY_STORAGE_API_KEY=your_bunny_api_key
+- BUNNY_STORAGE_ZONE_NAME=your_storage_zone
+- BUNNY_CDN_URL=your_cdn_url
 
 ### Installation
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/lms-backend.git
+git clone https://github.com/Dhaqane-00/E-Learning_Backend.git
 cd lms-backend
 ```
 
@@ -113,45 +113,6 @@ npm install
 ```bash
 npm run dev
 ```
-
-## 📚 API Documentation
-
-### Authentication Endpoints
-
-http
-POST /api/users/register
-POST /api/users/login
-GET /api/users/profile
-PUT /api/users/profile
-
-### Course Endpoints
-
-http
-POST /api/courses/create
-GET /api/courses
-GET /api/courses/:id
-PUT /api/courses/update/:id
-DELETE /api/courses/delete/:id
-GET /api/courses/search
-
-### Module Endpoints
-
-http
-POST /api/modules/course/:courseId/module
-PUT /api/modules/module/:moduleId
-DELETE /api/modules/course/:courseId/module/:moduleId
-GET /api/modules/module/:moduleId
-PUT /api/modules/course/:courseId/reorder-modules
-
-### Lesson Endpoints
-
-http
-POST /api/lessons/module/:moduleId/lesson
-PUT /api/lessons/lesson/:lessonId
-DELETE /api/lessons/module/:moduleId/lesson/:lessonId
-GET /api/lessons/lesson/:lessonId
-PUT /api/lessons/module/:moduleId/reorder-lessons
-POST /api/lessons/lesson/:lessonId/quiz
 
 ## 🔐 Security
 
