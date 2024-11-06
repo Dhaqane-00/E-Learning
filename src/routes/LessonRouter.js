@@ -15,41 +15,16 @@ const upload = require('../middleware/upload');
 router.use(authenticate);
 
 // Lesson routes
-router.post(
-  '/module/:moduleId/lesson',
-  authorize(['Instructor', 'Admin']),
-  upload.single('video'),
-  createLesson
-);
+router.post('/:moduleId',authorize(['Instructor', 'Admin']),upload.single('video'),createLesson);
 
-router.put(
-  '/lesson/:lessonId',
-  authorize(['Instructor', 'Admin']),
-  upload.single('video'),
-  updateLesson
-);
+router.put('/:lessonId',authorize(['Instructor', 'Admin']),upload.single('video'),updateLesson);
 
-router.delete(
-  '/module/:moduleId/lesson/:lessonId',
-  authorize(['Instructor', 'Admin']),
-  deleteLesson
-);
+router.delete('/module/:moduleId/lesson/:lessonId',authorize(['Instructor', 'Admin']),deleteLesson);
 
-router.get(
-  '/lesson/:lessonId',
-  getLessonById
-);
+router.get('/:lessonId',getLessonById);
 
-router.put(
-  '/module/:moduleId/reorder-lessons',
-  authorize(['Instructor', 'Admin']),
-  reorderLessons
-);
+router.put('/:moduleId/reorder-lessons',authorize(['Instructor', 'Admin']),reorderLessons);
 
-router.post(
-  '/lesson/:lessonId/quiz',
-  authorize(['Instructor', 'Admin']),
-  addQuizToLesson
-);
+router.post('/:lessonId/quiz',authorize(['Instructor', 'Admin']),addQuizToLesson);  
 
 module.exports = router; 

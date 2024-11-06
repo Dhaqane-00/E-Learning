@@ -4,24 +4,28 @@ const bunnyStorage = require('../utils/bunnycdn');
 // Create a new lesson
 exports.createLesson = async (req, res) => {
   try {
-    const { title, content, type, duration } = req.body;
+    const { title, content, duration } = req.body;
     const moduleId = req.params.moduleId;
     let videoUrl = null;
+    let fileName = null;
+    // Set type to 'Video' if there's a video file
+    const type = req.file ? 'Video' : 'Text';
 
-    // Handle video upload to Bunny CDN if lesson type is Video
-    if (type === 'Video' && req.file) {
-      const fileName = `${Date.now()}-${req.file.originalname}`;
-      await bunnyStorage.upload(
-        req.file.buffer,
-        `/lessons/${fileName}`
-      );
-      videoUrl = `${process.env.BUNNY_CDN_URL}/lessons/${fileName}`;
+    console.log('Request body:', req.body);
+    console.log('File:', req.file);
+    console.log('Determined type:', type); // Debug log
+
+    //check if moduleId is valid
+    const module = await Module.findById(moduleId);
+    if (!module) {
+      return res.status(404).json({ message: 'Module not found' });
     }
 
+    // Create lesson first without video
     const lesson = new Lesson({
       title,
       content,
-      type,
+      type, // Use the determined type
       duration,
       videoUrl
     });
@@ -34,14 +38,43 @@ exports.createLesson = async (req, res) => {
       { $push: { lessons: savedLesson._id } }
     );
 
+    // Handle video upload if file exists
+    if (req.file) {
+      console.log('Starting video upload...');
+      fileName = `${Date.now()}-${req.file.originalname}`;
+      
+      try {
+        await bunnyStorage.upload(
+          req.file.buffer,
+          `/lessons/${fileName}`
+        );
+        console.log('Video uploaded successfully');
+        
+        videoUrl = `${process.env.BUNNY_CDN_URL}/lessons/${fileName}`;
+        console.log('Video URL:', videoUrl);
+        
+        // Update lesson with video URL
+        savedLesson.videoUrl = videoUrl;
+        await savedLesson.save();
+      } catch (uploadError) {
+        console.error('Video upload failed:', uploadError);
+        return res.status(201).json({ 
+          message: 'Lesson created but video upload failed', 
+          lesson: savedLesson,
+          uploadError: uploadError.message 
+        });
+      }
+    }
+
     res.status(201).json({ 
       message: 'Lesson created successfully', 
       lesson: savedLesson 
     });
   } catch (error) {
+    console.error('Lesson creation error:', error);
     res.status(500).json({ 
       message: 'Failed to create lesson', 
-      error 
+      error: error.message 
     });
   }
 };
@@ -52,17 +85,8 @@ exports.updateLesson = async (req, res) => {
     const { title, content, type, duration } = req.body;
     const { lessonId } = req.params;
     let videoUrl = req.body.videoUrl; // Keep existing video if no new upload
-
-    // Handle video upload to Bunny CDN if new video is provided
-    if (type === 'Video' && req.file) {
-      const fileName = `${Date.now()}-${req.file.originalname}`;
-      await bunnyStorage.upload(
-        req.file.buffer,
-        `/lessons/${fileName}`
-      );
-      videoUrl = `${process.env.BUNNY_CDN_URL}/lessons/${fileName}`;
-    }
-
+    
+    // Update lesson first without video
     const updatedLesson = await Lesson.findByIdAndUpdate(
       lessonId,
       {
@@ -77,6 +101,20 @@ exports.updateLesson = async (req, res) => {
 
     if (!updatedLesson) {
       return res.status(404).json({ message: 'Lesson not found' });
+    }
+
+    // Handle video upload after lesson is updated successfully
+    if (type === 'Video' && req.file) {
+      const fileName = `${Date.now()}-${req.file.originalname}`;
+      await bunnyStorage.upload(
+        req.file.buffer,
+        `/lessons/${fileName}`
+      );
+      videoUrl = `${process.env.BUNNY_CDN_URL}/lessons/${fileName}`;
+      
+      // Update lesson with new video URL
+      updatedLesson.videoUrl = videoUrl;
+      await updatedLesson.save();
     }
 
     res.json({ 

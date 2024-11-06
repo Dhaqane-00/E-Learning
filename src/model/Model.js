@@ -38,7 +38,7 @@ const lessonSchema = new mongoose.Schema({
   videoUrl: String,
   duration: Number,
   content: String,
-  quiz: { type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' },
+  quiz: { type: mongoose.Schema.Types.ObjectId, ref: 'Quiz', default: null },
   type: { type: String, enum: ['Video', 'Text', 'Quiz'], default: 'Video' }
 }, { timestamps: true });
 
