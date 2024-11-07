@@ -1,0 +1,299 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* font-family: 'Space Grotesk', sans-serif; */
+    font-family: 'General Sans', sans-serif;
+
+    /* background-color: #040608; */
+}
+
+
+
+
+.active {
+    border: 1px solid #E85533 !important;
+}
+
+
+
+/* Gradient Colors */
+.bg-gradient {
+    background: linear-gradient(90deg, #FF61DA, #7255FF);
+    /* Confirm button gradient */
+}
+
+
+.gradient-line {
+    height: 1px;
+    background: linear-gradient(to right, #050505, #232323, #050505);
+    width: 80%;
+}
+
+.gradient-line-vertical {
+    width: 1px;
+    background: linear-gradient(to bottom, #050505, #232323, #050505);
+    width: 80%;
+}
+
+
+.line-1 {
+    height: 1px;
+    background-color: #232323;
+    width: 100%;
+}
+
+
+.gradient-line-left {
+    height: 1px;
+    background: linear-gradient(to right, #3E2E2C, #100604);
+    width: 80%;
+}
+
+.gradient-section {
+    background: linear-gradient(180deg, #090D15, #080B12, #070A10, #05070A, #040608);
+}
+
+
+
+
+
+
+
+
+
+/* ----------------------- scrollbar ------------------------- */
+
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 10px;
+    /* for horizontal scrollbar */
+}
+
+/* Track (background of the scrollbar) */
+::-webkit-scrollbar-track {
+    background: #131415;
+    /* Custom track background color */
+}
+
+/* Handle (scrollbar thumb) */
+::-webkit-scrollbar-thumb {
+    width: 4px;
+    background: #232323;
+    /* Custom handle color */
+    border: 2px rgb(39, 46, 54)2e2e2e;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #232323;
+    /* Darker shade on hover */
+}
+
+/* Handle on active (when clicking on the scrollbar) */
+::-webkit-scrollbar-thumb:active {
+    background: #232323;
+    /* Even darker shade when active */
+}
+
+
+
+
+/* toast.css */
+
+/* General styles for the toast notifications */
+.react-hot-toast {
+    background-color: #1e1e1e;
+    /* Dark background for toasts */
+    color: #f5f5f5;
+    /* Light text color */
+    border-radius: 8px;
+    /* Rounded corners */
+    padding: 12px 16px;
+    /* Padding for the toast */
+    font-size: 16px;
+    /* Font size */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    /* Subtle shadow for depth */
+}
+
+/* Success toast styles */
+.react-hot-toast.success {
+    background-color: #4caf50;
+    /* Green background for success messages */
+}
+
+/* Error toast styles */
+.react-hot-toast.error {
+    background-color: #f44336;
+    /* Red background for error messages */
+}
+
+/* Info toast styles */
+.react-hot-toast.info {
+    background-color: #2196f3;
+    /* Blue background for info messages */
+}
+
+/* Customizing the toast icon styles */
+.react-hot-toast svg {
+    fill: #fff;
+    /* Icon color */
+    margin-right: 8px;
+    /* Space between icon and text */
+}
+
+/* Toast positioning */
+.react-hot-toast {
+    position: fixed;
+    /* Fix the position */
+    bottom: 20px;
+    /* Distance from the bottom */
+    right: 20px;
+    /* Distance from the right */
+    z-index: 9999;
+    /* Ensure it is on top */
+}
+
+/* Animation styles for entering and leaving */
+.react-hot-toast-enter {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.react-hot-toast-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.react-hot-toast-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.react-hot-toast-exit-active {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+/* Customize the close button */
+.react-hot-toast .toast-close-button {
+    color: #f5f5f5;
+    /* Light color for close button */
+    opacity: 0.7;
+    /* Slight transparency */
+}
+
+/* Change close button on hover */
+.react-hot-toast .toast-close-button:hover {
+    opacity: 1;
+    /* Full opacity on hover */
+}
+
+
+
+
+
+/* --------------------- grid ------------------ */
+.masonry {
+
+    width: fit-content;
+    margin: auto;
+
+
+    column-count: 3;
+    /* Adjust the number of columns */
+    column-gap: 1rem;
+    /* Add space between the columns */
+
+  
+}
+
+.masonry-item {
+    break-inside: avoid;
+    /* Prevents the item from being split across columns */
+    margin-bottom: 1rem;
+    /* Add space between rows */
+    
+}
+
+
+
+
+
+
+
+
+
+/* ----------------- css graph/ grid background -------------- */
+
+@keyframes run {
+    0% {
+        transform: translateX(10px);
+    }
+
+    20% {
+        /* 2 seconds out of 30 (2/30 * 100 = 6.67%) */
+        transform: translateX(1450px);
+    }
+
+    100% {
+        transform: translateX(1450px);
+        /* Remain at 1500px for the rest of the time */
+    }
+}
+
+@keyframes runY {
+    0% {
+        transform: translateY(0px);
+    }
+
+    20% {
+        /* 2 seconds out of 30 (2/30 * 100 = 6.67%) */
+        transform: translateY(650px);
+    }
+
+    100% {
+        transform: translateY(650px);
+        /* Remain at 1500px for the rest of the time */
+    }
+}
+
+
+
+.run-animation-1 {
+    animation: run 10s infinite cubic-bezier(0.77, 0, 0.175, 1);
+    animation-delay: 0;
+}
+
+.run-animation-2 {
+    animation: run 10s infinite cubic-bezier(0.77, 0, 0.175, 1);
+    animation-delay: 2s;
+}
+
+.run-animation-3 {
+    animation: run 10s infinite cubic-bezier(0.77, 0, 0.175, 1);
+    animation-delay: 1s;
+}
+
+
+.run-animation-4 {
+    animation: runY 10s infinite cubic-bezier(0.77, 0, 0.175, 1);
+    animation-delay: 0;
+}
+
+.run-animation-5 {
+    animation: runY 10s infinite cubic-bezier(0.77, 0, 0.175, 1);
+    animation-delay: 2s;
+}
+
+.run-animation-6 {
+    animation: runY 10s infinite cubic-bezier(0.77, 0, 0.175, 1);
+    animation-delay: 1s;
+}
