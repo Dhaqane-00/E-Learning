@@ -21,7 +21,6 @@ import ErrorPage from './pages/ErrorPage.jsx'
 function App() {
 
   return (
-    <AuthProvider>
       <UserContextProvider>
       <WindowWidthProvider >
         <Toaster />
@@ -69,7 +68,6 @@ function App() {
 
       </WindowWidthProvider>
       </UserContextProvider>
-    </AuthProvider>
 
   )
 }
