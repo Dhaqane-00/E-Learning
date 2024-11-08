@@ -32,9 +32,4 @@ const createAuthSlice = createSlice({
     }
 })
 
-export const registerUser = (state) => state.auth.user
-export const registerLoading = (state) => state.auth.loading
-export const registerError = (state) => state.auth.error
-
-
 export default createAuthSlice.reducer
