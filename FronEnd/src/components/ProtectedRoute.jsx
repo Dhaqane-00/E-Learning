@@ -1,11 +1,11 @@
 import React, { useContext } from 'react'
-import { AuthContext } from '../context/AuthContext'
 import { Navigate } from 'react-router-dom';
 import { ThreeDot } from 'react-loading-indicators'
+import { useSelector } from 'react-redux'
 
 function ProtectedRoute({ children }) {
 
-    const { loggedInUser, isLoading } = useContext(AuthContext);
+    const loggedInUser = useSelector(registerUser)
 
     if (isLoading) {
         return <div className='text-center'>

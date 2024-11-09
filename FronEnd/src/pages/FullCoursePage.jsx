@@ -5,7 +5,6 @@ import GoBack from '../components/GoBack';
 import { toast } from 'react-hot-toast';
 import PrimaryButton from '../components/formComponents/PrimaryButton'
 import { ThreeDot } from 'react-loading-indicators';
-import { AuthContext } from '../context/AuthContext'
 
 function FullCoursePage() {
 
@@ -13,7 +12,7 @@ function FullCoursePage() {
     const ref = useRef();
     const { courseId } = useParams();
 
-    const { loggedInUser } = useContext(AuthContext)
+    const loggedInUser = useSelector(registerUser)
     const [course, setCourse] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
     const [endCourseIsLoading, setEndCourseIsLoading] = useState(false)

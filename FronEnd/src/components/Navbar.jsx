@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
 import { NavLink } from 'react-router-dom';
 import { IoCloseSharp } from "react-icons/io5";
 import { MdAccountCircle } from "react-icons/md";
@@ -8,16 +7,13 @@ import Hamburger from 'hamburger-react'
 import { IoArrowForwardSharp } from "react-icons/io5";
 import { motion } from 'framer-motion'
 import { WindowWidthContext } from '../context/WindowWidthContext';
-import { UserContext } from '../context/UserContext';
 
 
 function Navbar() {
 
     const { isMobile } = useContext(WindowWidthContext)
-    const { loggedInUser } = useContext(AuthContext)
-    const { user } = useContext(UserContext)
+   
 
-    console.log(user);
 
 
 
@@ -98,7 +94,7 @@ function Navbar() {
 
 
 
-                        <Link to={`${loggedInUser ? "/my-profile" : "/login"}`} className='pr-2 text-white font-medium'><MdAccountCircle size={23} /></Link>
+                        <Link to={`${'' ? "/my-profile" : "/login"}`} className='pr-2 text-white font-medium'><MdAccountCircle size={23} /></Link>
 
 
                     </div>
@@ -208,7 +204,7 @@ function Navbar() {
 
                                 {
 
-                                    loggedInUser && <motion.div
+                                    '' && <motion.div
                                         initial={{ y: 50, opacity: 0 }}
                                         animate={{ y: 0, opacity: 100 }}
                                         transition={{ delay: 0.5 }}
@@ -336,7 +332,7 @@ function Navbar() {
 
 
                             {
-                                loggedInUser &&
+                                '' &&
 
                                 <div className='flex gap-3 justify-center items-center'>
 
@@ -347,7 +343,7 @@ function Navbar() {
                             }
 
                             {
-                                !loggedInUser &&
+                                !'' &&
                                 <Link to={"/login"}>Login</Link>
                             }
 
@@ -355,7 +351,7 @@ function Navbar() {
 
                             {/* ------------ hide this if user not logged in ------------- */}
                             {
-                                loggedInUser && <Link to={"/course/create"} className={` bgTwo border border-green text-white font-semibold px-5 py-2 rounded-full  shadow-2xl shadow-lime-800`}>
+                                '' && <Link to={"/course/create"} className={` bgTwo border border-green text-white font-semibold px-5 py-2 rounded-full  shadow-2xl shadow-lime-800`}>
                                     Contribute
                                 </Link>
                             }

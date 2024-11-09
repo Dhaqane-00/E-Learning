@@ -60,9 +60,9 @@ function AllCourses() {
 
 
     const filteredCourses = Object.keys(courses).filter(key =>
-        courses[key].courseName.toLowerCase().includes(searchQuery.toLowerCase())
+        ''.toLowerCase().includes(searchQuery.toLowerCase())
         ||
-        courses[key].courseDescription.toLowerCase().includes(searchQuery.toLowerCase())
+        ''.toLowerCase().includes(searchQuery.toLowerCase())
     ).map(key => courses[key]);
 
 

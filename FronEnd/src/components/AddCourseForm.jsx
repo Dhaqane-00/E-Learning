@@ -6,12 +6,11 @@ import GoBack from '../components/GoBack'
 import { toast } from 'react-hot-toast'
 import SecondaryButton from '../components/formComponents/SecondaryButton'
 import CourseCard from '../components/CourseCard'
-import { AuthContext } from '../context/AuthContext'
 import { MdUpload } from "react-icons/md";
 import { WindowWidthContext } from '../context/WindowWidthContext'
 function AddCourseForm() {
 
-  const { loggedInUser } = useContext(AuthContext)
+  const loggedInUser = useSelector(registerUser)
   const { isMobile } = useContext(WindowWidthContext);
 
   //restricting the user to delete a chapter if only one chapter is left

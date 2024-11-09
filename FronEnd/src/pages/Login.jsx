@@ -2,17 +2,15 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../config/axiosConfig'
 import Input from '../components/formComponents/Input'
-import { AuthContext } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import PrimaryButton from '../components/formComponents/PrimaryButton'
+import { useLoginMutation } from '../store/Api/Auth';
 
 function Login() {
+    const [login, { isLoading, isSuccess, isError }] = useLoginMutation();
     const navigate = useNavigate();
 
-    const { login } = useContext(AuthContext)
-
-    const [isLoading, setIsLoading] = useState(false)
 
     const [formData, setFormData] = useState({
         email: "",
@@ -33,11 +31,10 @@ function Login() {
         e.preventDefault();
 
         try {
-            setIsLoading(true)
 
             const status = await login(formData);
 
-            if (status == 200) {
+            if (status.data.message == 'Login successful.') {
 
                 navigate("/")
 
@@ -67,9 +64,6 @@ function Login() {
             console.log("Login Failed", error);
         }
 
-        finally {
-            setIsLoading(false)
-        }
     };
 
 
@@ -80,10 +74,10 @@ function Login() {
 
                 {/* ---------- headline ---------- */}
 
-                {/* <div className='w-96 mx-auto'>
+                <div className='w-96 mx-auto'>
     <h2 className='bg-gradientForBg bg-clip-text text-transparent text-4xl font-semibold'>Welcome Back</h2>
     <p className='text-gray mt-2'>Please enter your login credentials to continue</p>
-</div> */}
+</div>
 
 
                 {/* ------------ form -------------- */}

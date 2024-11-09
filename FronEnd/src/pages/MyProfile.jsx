@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from '../config/axiosConfig';
 import Input from '../components/formComponents/Input'
 import Logout from '../components/Logout';
-import { AuthContext } from '../context/AuthContext';
 import SecondaryButton from '../components/formComponents/SecondaryButton'
 import CourseCard from '../components/CourseCard';
 import { WindowWidthContext } from '../context/WindowWidthContext';
@@ -22,7 +21,7 @@ function MyProfile() {
 
     const navigate = useNavigate();
 
-    const { loggedInUser } = useContext(AuthContext);
+    const loggedInUser = useSelector(registerUser)
     const { isMobile } = useContext(WindowWidthContext)
 
     const [enrolledCourses, setEnrolledCourses] = useState({});
