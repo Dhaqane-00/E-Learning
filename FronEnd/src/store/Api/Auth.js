@@ -41,6 +41,8 @@ const authApi = createApi({
                     const result = await queryFulfilled;
                     setToken(result.data.token);
                     setUser(result.data.user);
+                    //save user in local storage
+                    localStorage.setItem("user", JSON.stringify(result.data.user));
                 } catch (error) {
                     console.log(error);
                 }

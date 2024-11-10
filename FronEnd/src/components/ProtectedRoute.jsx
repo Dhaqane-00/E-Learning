@@ -1,17 +1,23 @@
-import React from 'react'
-import { Navigate } from 'react-router-dom';
-import { ThreeDot } from 'react-loading-indicators'
+import { Navigate } from 'react-router-dom'
+import PropTypes from 'prop-types'
 import Cookies from 'js-cookie'
-import { Outlet } from 'react-router-dom';
 
-function ProtectedRoute({ children }) {
-    const loggedInUser = Cookies.get('user')
+const ProtectedRoute = ({ children }) => {
+    // Get token from cookies
+    const token = Cookies.get('token')
+    const user = Cookies.get('user')
 
-    if (!loggedInUser) {
-        return <Navigate to={"/login"} />
+    // If there's no token, redirect to login
+    if (!token || !user) {
+        return <Navigate to="/login" replace />
     }
 
-    return children || <Outlet />
+    // If token exists, render the protected content
+    return children
+}
+
+ProtectedRoute.propTypes = {
+    children: PropTypes.node.isRequired
 }
 
 export default ProtectedRoute

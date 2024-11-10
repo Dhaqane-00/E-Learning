@@ -73,6 +73,7 @@ exports.getProfile = async (req, res) => {
 
     res.json({ message: "User profile fetched successfully.", user });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'Failed to fetch user profile.', error });
   }
 };
@@ -82,26 +83,104 @@ exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
     const { name, email } = req.body;
-    let profileImageUrl = req.body.profileImage; // Keep existing image if no new upload
+    let updateFields = {};
 
-    // Handle file upload to Bunny CDN
-    if (req.file) {
-      const fileName = `${Date.now()}-${req.file.originalname}`;
-      await bunnyStorage.upload(
-        req.file.buffer,
-        `/profiles/${fileName}`
-      );
-      profileImageUrl = `${process.env.BUNNY_CDN_URL}/profiles/${fileName}`;
+    // Only add fields if they are provided
+    if (name) updateFields.name = name;
+    if (email) {
+      // Check if email already exists for another user
+      const existingUser = await User.findOne({ email, _id: { $ne: userId } });
+      if (existingUser) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Email already in use.' 
+        });
+      }
+      updateFields.email = email;
     }
 
+    // Handle profile image upload
+    if (req.file) {
+      try {
+        const fileName = `${Date.now()}-${req.file.originalname}`;
+        await bunnyStorage.upload(
+          req.file.buffer,
+          `/profiles/${fileName}`
+        );
+        updateFields.profileImage = `${process.env.BUNNY_CDN_URL}/profiles/${fileName}`;
+      } catch (uploadError) {
+        console.error('File upload error:', uploadError);
+        return res.status(400).json({
+          success: false,
+          message: 'Failed to upload profile image.'
+        });
+      }
+    }
+
+    // Update user
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { name, email, profileImage: profileImageUrl },
-      { new: true }
-    ).select('-password');
+      { $set: updateFields },
+      { 
+        new: true,        // Return updated document
+        runValidators: true,  // Run schema validations
+        select: '-password'   // Exclude password from result
+      }
+    );
 
-    res.json({ message: 'Profile updated successfully.', user: updatedUser });
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully.',
+      user: updatedUser
+    });
+
   } catch (error) {
-    res.status(500).json({ message: 'Failed to update profile.', error });
+    console.error('Update profile error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update profile.',
+      error: error.message
+    });
+  }
+};
+
+// Update user password
+exports.updatePassword = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { currentPassword, newPassword } = req.body;
+
+    // Find user with password field
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Verify current password
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: 'Current password is incorrect.' });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await User.findByIdAndUpdate(
+      userId,
+      { password: hashedPassword },
+      { runValidators: true }
+    );
+
+    res.json({ message: 'Password updated successfully.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update password.', error: error.message });
   }
 };

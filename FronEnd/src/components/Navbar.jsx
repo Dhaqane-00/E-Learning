@@ -1,359 +1,177 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { IoCloseSharp } from "react-icons/io5";
 import { MdAccountCircle } from "react-icons/md";
-import Hamburger from 'hamburger-react'
+import { Squash as Hamburger } from 'hamburger-react'
 import { IoArrowForwardSharp } from "react-icons/io5";
 import { motion } from 'framer-motion'
 import { WindowWidthContext } from '../context/WindowWidthContext';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
 
 
 function Navbar() {
     const navigate = useNavigate();
-    const loggedInUser = Cookies.get("token");
+    const [showNavbar, setShowNavbar] = useState(false);
+    const [hideNavbar, setHideNavbar] = useState(false);
+    const [lastScrollY, setLastScrollY] = useState(0);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [isFullCoursePage, setIsFullCoursePage] = useState(false);
+    const [showNotificationDiv, setShowNotificationDiv] = useState(true);
+    
+    const token = Cookies.get('token');
+    const userString = localStorage.getItem('user');
+    const user = userString ? JSON.parse(userString) : null;
+    
 
-    const { isMobile } = useContext(WindowWidthContext)
-    const location = useLocation();
-    const hideNavbar = location.pathname === "/contributors" || location.pathname === "/all-courses";
+    const handleNotificationDivClose = () => {
+        setShowNotificationDiv(false);
+    };
 
-    const hideNavbarPaths = /^\/course\/[a-zA-Z0-9]+$/; // Regex for '/course/someCourseId'
-    const isFullCoursePage = hideNavbarPaths.test(location.pathname)
-
-    const [showNotificationDiv, setShowNotificationDiv] = useState(true)
-
-    function handleNotificationDivClose() {
-        setShowNotificationDiv(false)
-    }
-
+    // Handle scroll for navbar hide/show
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowNotificationDiv(false)
-        }, 60000);
-        return () => { clearTimeout(timer) }
-    }, [])
-
-    const [showNavbar, setShowNavbar] = useState(false)
-
-    // Effect to handle body scroll behavior
-    useEffect(() => {
-        if (showNavbar) {
-            // Prevent scrolling when navbar is open
-            document.body.style.overflow = 'hidden';
-        } else {
-            // Re-enable scrolling when navbar is closed
-            document.body.style.overflow = 'unset';
-        }
-
-        // Cleanup function to reset body style
-        return () => {
-            document.body.style.overflow = 'unset';
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            setHideNavbar(currentScrollY > lastScrollY);
+            setLastScrollY(currentScrollY);
         };
-    }, [showNavbar]);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [lastScrollY]);
 
-    const handleNavLinkClick = () => {
-        setShowNavbar(false); // Close the navbar
+    // Handle window resize
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // Check if current page is FullCoursePage
+    useEffect(() => {
+        setIsFullCoursePage(window.location.pathname.includes('/course/'));
+    }, []);
+
+    const handleLogout = () => {
+        Cookies.remove('token');
+        Cookies.remove('user');
+        localStorage.removeItem('user');
+        navigate("/login");
     };
 
     return (
-
-
-
-
-        isMobile ?
-
-            // ----------------------------- MOBILE VIEW -----------------------------
-
-            (
-
-
-                <div className='bg-bgOne pb-20 w-full' >
-
-
-                    <div className='fixed top-0 w-full flex h-16 z-50 gap-6 items-center justify-between px-4 bg-bgOne border-b border-border'>
-
-
-                        <Hamburger size={24} color='white' toggled={showNavbar} toggle={setShowNavbar} />
-
-                        <Link to={"/"} className='font-bold bg-gradientForBg text-2xl bg-clip-text text-transparent '>BitByBit</Link>
-
-
-
-
-
-                        <Link to={`${loggedInUser ? "/my-profile" : "/login"}`} className='pr-2 text-white font-medium'><MdAccountCircle size={23} /></Link>
-
-
-                    </div>
-
-
-                    {
-                        showNavbar &&
-
-                        (
-                            <div className='w-full fixed z-50 bg-bgOne top-12 pt-20 min-h-screen flex flex-col text-white uppercase font-bold text-4xl gap-2 px-8'>
-
-                                <motion.div
-                                    initial={{ y: 50, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 100 }}
-                                    transition={{ delay: 0 }}
-                                >
-                                    <Link
-                                        to="/"
-                                        onClick={handleNavLinkClick}
-                                        className=' flex gap-2 items-center'
-
-                                    >
-                                        <span className=''>
-                                            <IoArrowForwardSharp size={20} />
-                                        </span>
-                                        Home
-                                    </Link>
-                                </motion.div>
-
-
-
-
-                                <motion.div
-                                    initial={{ y: 50, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 100 }}
-                                    transition={{ delay: 0.1 }}
-                                >
-                                    <Link
-                                        to="/all-courses"
-                                        onClick={handleNavLinkClick}
-                                        className=' flex gap-2 items-center'
-
-                                    >
-                                        <span className=''>
-                                            <IoArrowForwardSharp size={20} />
-                                        </span>
-                                        Courses
-                                    </Link>
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ y: 50, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 100 }}
-                                    transition={{ delay: 0.2 }}
-                                >
-                                    <Link
-                                        to="/contributors"
-                                        onClick={handleNavLinkClick}
-                                        className=' flex gap-2 items-center'
-
-                                    >
-                                        <span className=''>
-                                            <IoArrowForwardSharp size={20} />
-                                        </span>
-                                        Contributors
-                                    </Link>
-                                </motion.div>
-
-
-
-                                <motion.div
-                                    initial={{ y: 50, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 100 }}
-                                    transition={{ delay: 0.3 }}
-                                >
-                                    <Link
-                                        to="/vote-resources"
-                                        onClick={handleNavLinkClick}
-                                        className=' flex gap-2 items-center'
-
-                                    >
-                                        <span className=''>
-                                            <IoArrowForwardSharp size={20} />
-                                        </span>
-                                        Vote
-                                    </Link>
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ y: 50, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 100 }}
-                                    transition={{ delay: 0.4 }}
-                                >
-                                    <Link
-                                        to="/about"
-                                        onClick={handleNavLinkClick}
-                                        className=' flex gap-2 items-center'
-
-                                    >
-                                        <span className=''>
-                                            <IoArrowForwardSharp size={20} />
-                                        </span>
-                                        About
-                                    </Link>
-                                </motion.div>
-
-
-                                {
-
-                                    '' && <motion.div
-                                        initial={{ y: 50, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 100 }}
-                                        transition={{ delay: 0.5 }}
-                                    >
-                                        <Link
-                                            to="/course/create"
-                                            onClick={handleNavLinkClick}
-                                            className='bg-gradientForBg bg-clip-text text-transparent flex gap-2 items-center'
-                                        >
-                                            <span className='text-green'>
-                                                <IoArrowForwardSharp size={20} />
-                                            </span>
-                                            Contribute
-
-                                        </Link>
-                                    </motion.div>
-
-
-                                }
-
-
-
-                            </div>
-                        )
-
-
-                    }
-
-
-                </div >
-            )
-
-
-            :
-
-            // ------------------------- DSEKTOP VIEW -------------------
-
-            (
-                <div className={`${hideNavbar ? "hidden" : ""} ${isFullCoursePage ? "hidden" : ""} w-full flex flex-col justify-between items-center text-white text-sm font-medium fixed z-50 top-0 left-0 transition-all duration-300 bg-transparent backdrop-blur-2xl shadow-2xl shadow-bgOne`}>
-
-
-                    {/* ------------------- notification banner ----------------- */}
-
-                    {
-                        showNotificationDiv &&
-
+        isMobile ? (
+            // Mobile View
+            <div className='bg-bgOne pb-20 w-full'>
+                <div className='fixed top-0 w-full flex h-16 z-50 gap-6 items-center justify-between px-4 bg-bgOne border-b border-border'>
+                    {showNotificationDiv && (
                         <div className='bg-gradientForBg w-full text-center py-3'>
                             <p className='text-bgOne'>This app is hosted on Render's free tier, so initial loading might take a few moments. Thank you for your patience!</p>
-
-
                             <button
                                 className='absolute right-4 top-3 text-bgOne'
-                                onClick={handleNotificationDivClose}><IoCloseSharp size={17} /></button>
+                                onClick={handleNotificationDivClose}>
+                                <IoCloseSharp size={17} />
+                            </button>
                         </div>
-                    }
-
-
-
-                    <div className='w-full flex py-4'>
-
-                        {/* -------------logo----------- */}
-                        <div className='w-1/4 flex justify-center items-center'>
-                            <Link className='font-semibold text-xl' to={"/"}>BitByBit</Link>
-                        </div>
-
-                        {/* --------------menu------------- */}
-                        <div className='w-2/4 font-normal'>
-                            <div className='w-fit mx-auto flex justify-center items-center gap-6 border border-border rounded-full px-8 py-2 text-gray'>
-
-                                <NavLink
-                                    className={({ isActive }) =>
-                                        isActive
-                                            ? 'text-white font-medium'
-                                            : 'hover:text-white active:text-white hover:font-medium transition-all duration-400'
-                                    }
-                                    to="/all-courses"
-                                >
-                                    Courses
-                                </NavLink>
-
-
-                                <NavLink
-                                    className={({ isActive }) =>
-                                        isActive
-                                            ? 'text-white font-medium'
-                                            : 'hover:text-white active:text-white hover:font-medium transition-all duration-400'
-                                    }
-                                    to="/contributors"
-                                >
-                                    Contributers
-                                </NavLink>
-
-
-
-                                <NavLink
-                                    className={({ isActive }) =>
-                                        isActive
-                                            ? 'text-white font-medium'
-                                            : 'hover:text-white active:text-white hover:font-medium transition-all duration-400'
-                                    }
-                                    to="/vote-resources"
-                                >
-                                    Vote
-                                </NavLink>
-
-
-
-
-                                <NavLink
-                                    className={({ isActive }) =>
-                                        isActive
-                                            ? 'text-white font-medium'
-                                            : 'hover:text-white active:text-white hover:font-medium transition-all duration-400'
-                                    }
-                                    to="/about"
-                                >
-                                    About
-                                </NavLink>
-
-                            </div>
-                        </div>
-
-                        {/* ------------------login--------------- */}
-                        <div className='w-1/4 flex justify-center items-center gap-8'>
-
-
-                            {
-                                '' &&
-
-                                <div className='flex gap-3 justify-center items-center'>
-
-                                    <img className='h-10 w-10 rounded-full border border-border object-cover' src={user?.profileImage} alt="" />
-                                    <Link to={"/my-profile"}>{loggedInUser}</Link>
-                                
-                                </div>
-                            }
-
-                            {
-                                !'' &&
-                                <Link to={"/login"}>Login</Link>
-                            }
-
-
-
-                            {/* ------------ hide this if user not logged in ------------- */}
-                            {
-                                '' && <Link to={"/course/create"} className={` bgTwo border border-green text-white font-semibold px-5 py-2 rounded-full  shadow-2xl shadow-lime-800`}>
-                                    Contribute
+                    )}
+                    <Hamburger size={24} color='white' toggled={showNavbar} toggle={setShowNavbar} />
+                    <Link to={"/"} className='font-bold bg-gradientForBg text-2xl bg-clip-text text-transparent'>BitByBit</Link>
+                    
+                    {token ? (
+                        <ProtectedRoute>
+                            <div className="flex items-center gap-2">
+                                <Link to="/my-profile" className='pr-2 text-white font-medium flex items-center gap-1'>
+                                    <MdAccountCircle size={23} />
+                                    <span>{user?.name}</span>
                                 </Link>
-                            }
-
-                        </div>
-
-                    </div>
-                    {/* <div className='mt-5 gradient-line'></div> */}
+                            </div>
+                        </ProtectedRoute>
+                    ) : (
+                        <Link to="/login" className='pr-2 text-white font-medium flex items-center gap-1'>
+                            <MdAccountCircle size={23} />
+                            <span>Login</span>
+                        </Link>
+                    )}
                 </div>
 
-            )
+                {showNavbar && (
+                    <div className='fixed top-16 w-full bg-bgOne z-50 border-b border-border'>
+                        <div className='flex flex-col gap-4 p-4'>
+                            <Link to="/" className='text-white'>Home</Link>
+                            <Link to="/all-courses" className='text-white'>Courses</Link>
+                            <Link to="/contributors" className='text-white'>Contributors</Link>
+                            <Link to="/about" className='text-white'>About</Link>
+                            <Link to="/vote-resources" className='text-white'>Vote Resources</Link>
+                            
+                            {token && (
+                                <ProtectedRoute>
+                                    <div className="flex flex-col gap-4">
+                                        <Link to="/my-profile" className='text-white'>My Profile</Link>
+                                        <Link to="/course/create" className='text-white'>Create Course</Link>
+                                        <button onClick={handleLogout} className='text-white text-left'>Logout</button>
+                                    </div>
+                                </ProtectedRoute>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+        ) : (
+            // Desktop View
+            <div className={`${hideNavbar ? "hidden" : ""} ${isFullCoursePage ? "hidden" : ""} w-full flex flex-col justify-between items-center text-white text-sm font-medium fixed z-50 top-0 left-0 transition-all duration-300 bg-transparent backdrop-blur-2xl shadow-2xl shadow-bgOne`}>
+                {showNotificationDiv && (
+                    <div className='bg-gradientForBg w-full text-center py-3'>
+                        <p className='text-bgOne'>This app is hosted on Render's free tier, so initial loading might take a few moments. Thank you for your patience!</p>
+                        <button
+                            className='absolute right-4 top-3 text-bgOne'
+                            onClick={handleNotificationDivClose}>
+                            <IoCloseSharp size={17} />
+                        </button>
+                    </div>
+                )}
+                <div className='w-full flex py-4'>
+                    <div className='w-1/4 flex justify-center items-center'>
+                        <Link to="/" className='font-bold bg-gradientForBg text-2xl bg-clip-text text-transparent'>BitByBit</Link>
+                    </div>
 
+                    <div className='w-2/4 flex justify-center items-center gap-8'>
+                        <Link to="/all-courses">Courses</Link>
+                        <Link to="/contributors">Contributors</Link>
+                        <Link to="/about">About</Link>
+                        <Link to="/vote-resources">Vote Resources</Link>
+                    </div>
 
+                    <div className='w-1/4 flex justify-center items-center gap-8'>
+                        {token ? (
+                            <ProtectedRoute>
+                                <div className='flex gap-3 justify-center items-center'>
+                                    <Link to="/my-profile" className="flex items-center gap-2">
+                                        <MdAccountCircle size={23} />
+                                        <span>{user?.name}</span>
+                                    </Link>
+                                    <button onClick={handleLogout}>Logout</button>
+                                </div>
+                            </ProtectedRoute>
+                        ) : (
+                            <Link to="/login" className="flex items-center gap-2">
+                                <MdAccountCircle size={23} />
+                                <span>Login</span>
+                            </Link>
+                        )}
+
+                        {token && (
+                            <ProtectedRoute>
+                                <Link to="/course/create" className="bgTwo border border-green text-white font-semibold px-5 py-2 rounded-full shadow-2xl shadow-lime-800">
+                                    Contribute
+                                </Link>
+                            </ProtectedRoute>
+                        )}
+                    </div>
+                </div>
+            </div>
+        )
     );
 }
 

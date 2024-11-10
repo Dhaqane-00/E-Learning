@@ -16,55 +16,57 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import { Toaster } from 'react-hot-toast'
 import CoursesUploadedByUser from './pages/CoursesUploadedByUser.jsx'
 import ErrorPage from './pages/ErrorPage.jsx'
+
 function App() {
-
   return (
-      <WindowWidthProvider >
-        <Toaster />
+    <WindowWidthProvider>
+      <Toaster />
+      <Routes>
+        <Route path='/' element={<Layout />}>
+          {/* Public Routes */}
+          <Route index element={<Home />} />
+          <Route path='login' element={<Login />} />
+          <Route path='register' element={<Register />} />
+          <Route path='contributors' element={<AllContributers />} />
+          <Route path='all-courses' element={<AllCourses />} />
+          <Route path='about' element={<About />} />
+          <Route path='vote-resources' element={<VoteResources />} />
+          <Route path='user/:userId/uploaded-courses' element={<CoursesUploadedByUser />} />
 
-        <Routes>
-          <Route path='/' element={<Layout />}>
-            <Route path='' element={<Home />} />
-            <Route path='/login' element={<Login />} />
-            <Route path='/register' element={<Register />} />
-            <Route path='/contributors' element={<AllContributers />} />
-
-            <Route path='/course/create' element={
+          {/* Protected Routes */}
+          <Route 
+            path='course/create' 
+            element={
               <ProtectedRoute>
                 <AddCoursePage />
               </ProtectedRoute>
-            } />
+            } 
+          />
 
-            <Route path='/all-courses' element={<AllCourses />} />
-
-            <Route path='/course/:courseId' element={
+          <Route 
+            path='course/:courseId' 
+            element={
               <ProtectedRoute>
                 <FullCoursePage />
               </ProtectedRoute>
-            } />
+            } 
+          />
 
-
-            <Route path='/about' element={<About />} />
-            <Route path='/vote-resources' element={<VoteResources />} />
-
-
-            <Route path='/my-profile' element={
+          <Route 
+            path='my-profile' 
+            element={
               <ProtectedRoute>
                 <MyProfile />
               </ProtectedRoute>
-            } />
+            } 
+          />
+        </Route>
 
-            <Route path='/user/:userId/uploaded-courses' element={<CoursesUploadedByUser />} />
-
-          </Route>
-
-
-          <Route path='*' element={<ErrorPage />} />
-
-        </Routes>
-
-      </WindowWidthProvider>
-    )
+        {/* Error Route */}
+        <Route path='*' element={<ErrorPage />} />
+      </Routes>
+    </WindowWidthProvider>
+  )
 }
 
 export default App
