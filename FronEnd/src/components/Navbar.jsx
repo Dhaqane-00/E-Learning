@@ -7,25 +7,22 @@ import Hamburger from 'hamburger-react'
 import { IoArrowForwardSharp } from "react-icons/io5";
 import { motion } from 'framer-motion'
 import { WindowWidthContext } from '../context/WindowWidthContext';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 
 function Navbar() {
+    const navigate = useNavigate();
+    const loggedInUser = Cookies.get("token");
 
     const { isMobile } = useContext(WindowWidthContext)
-   
-
-
-
-
     const location = useLocation();
     const hideNavbar = location.pathname === "/contributors" || location.pathname === "/all-courses";
 
     const hideNavbarPaths = /^\/course\/[a-zA-Z0-9]+$/; // Regex for '/course/someCourseId'
     const isFullCoursePage = hideNavbarPaths.test(location.pathname)
 
-
     const [showNotificationDiv, setShowNotificationDiv] = useState(true)
-
 
     function handleNotificationDivClose() {
         setShowNotificationDiv(false)
@@ -34,15 +31,9 @@ function Navbar() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setShowNotificationDiv(false)
-
         }, 60000);
         return () => { clearTimeout(timer) }
     }, [])
-
-
-
-
-
 
     const [showNavbar, setShowNavbar] = useState(false)
 
@@ -62,11 +53,9 @@ function Navbar() {
         };
     }, [showNavbar]);
 
-
     const handleNavLinkClick = () => {
         setShowNavbar(false); // Close the navbar
     };
-
 
     return (
 
@@ -94,7 +83,7 @@ function Navbar() {
 
 
 
-                        <Link to={`${'' ? "/my-profile" : "/login"}`} className='pr-2 text-white font-medium'><MdAccountCircle size={23} /></Link>
+                        <Link to={`${loggedInUser ? "/my-profile" : "/login"}`} className='pr-2 text-white font-medium'><MdAccountCircle size={23} /></Link>
 
 
                     </div>

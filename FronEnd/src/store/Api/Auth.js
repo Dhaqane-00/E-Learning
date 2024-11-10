@@ -8,6 +8,12 @@ const setToken = (token) => {
         secure: true  // Required when using SameSite=None
     });
 }
+const setUser = (user) => {
+    Cookies.set("user", user, {
+        sameSite: 'None',
+        secure: true  // Required when using SameSite=None
+    });
+}
 
 const BASE_URL = "http://localhost:3000/api/users"
 const authApi = createApi({
@@ -34,6 +40,7 @@ const authApi = createApi({
                     console.log(formData);
                     const result = await queryFulfilled;
                     setToken(result.data.token);
+                    setUser(result.data.user);
                 } catch (error) {
                     console.log(error);
                 }

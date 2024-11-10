@@ -1,20 +1,17 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Navigate } from 'react-router-dom';
 import { ThreeDot } from 'react-loading-indicators'
-import { useSelector } from 'react-redux'
+import Cookies from 'js-cookie'
+import { Outlet } from 'react-router-dom';
 
 function ProtectedRoute({ children }) {
+    const loggedInUser = Cookies.get('user')
 
-    const loggedInUser = useSelector(registerUser)
-
-    if (isLoading) {
-        return <div className='text-center'>
-            <ThreeDot color="#9CF57F" size="small" />
-        </div>
+    if (!loggedInUser) {
+        return <Navigate to={"/login"} />
     }
 
-    return loggedInUser ? children : <Navigate to={"/login"} />
-
+    return children || <Outlet />
 }
 
 export default ProtectedRoute

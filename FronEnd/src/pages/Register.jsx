@@ -4,15 +4,15 @@ import axios from '../config/axiosConfig';
 import Input from '../components/formComponents/Input'
 import { toast } from 'react-hot-toast';
 import PrimaryButton from '../components/formComponents/PrimaryButton';
+import { useCreateUserMutation } from '../store/Api/Auth';
 
 function Register() {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false)
+    const [createUser, { isLoading, isSuccess, isError }] = useCreateUserMutation();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
         name: "",
-        bio: "",
         profileImage: null,
     });
 
@@ -57,7 +57,6 @@ function Register() {
         const registerUserDto = {
             name: formData.name,
             email: formData.email,
-            bio: formData.bio,
             password: formData.password,
         }
 
@@ -76,9 +75,8 @@ function Register() {
 
 
         try {
-            setIsLoading(true)
 
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/public/register`, formDataWithImage);
+            const response = await createUser(formDataWithImage);
 
             const data = response.data;
 
@@ -101,7 +99,7 @@ function Register() {
         } catch (error) {
             if (error.response && error.response.data) {
                 const errorMessage = error.response.data;
-                if (errorMessage === "Email already exists") {
+                if (errorMessage.message === "Email already in use.") {
 
                     toast.error("Email already exists!", {
                         position: "top-right",
@@ -124,9 +122,6 @@ function Register() {
                     })
                 }
             }
-        }
-        finally {
-            setIsLoading(false)
         }
     };
 
@@ -200,19 +195,6 @@ function Register() {
 
                         />
 
-                    </div>
-
-                    <div className='h-24 w-full '>
-                        <Input
-                            totalWidth={"w-full"}
-                            className={""}
-                            type={"text"}
-                            name={"bio"}
-                            value={formData.bio}
-                            placeholder={"your bio"}
-                            onChange={(e) => handleInputChange(e)}
-
-                        />
                     </div>
 
 
