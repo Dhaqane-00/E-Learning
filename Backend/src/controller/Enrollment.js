@@ -43,6 +43,7 @@ exports.getUserEnrollments = async (req, res) => {
   try {
     const userId = req.user.userId;
     const enrollments = await Enrollment.find({ student: userId })
+      .populate('student')
       .populate('course')
       .populate('completedLessons')
       .populate('quizScores.lesson');

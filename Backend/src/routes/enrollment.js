@@ -10,7 +10,7 @@ router.use(authenticate);
 router.post('/:courseId', enrollmentController.createEnrollment);
 
 // Get all enrollments for current user
-router.get('/user', enrollmentController.getUserEnrollments);
+router.get('/', enrollmentController.getUserEnrollments);
 
 // Get specific enrollment details
 router.get('/:enrollmentId', enrollmentController.getEnrollmentDetails);

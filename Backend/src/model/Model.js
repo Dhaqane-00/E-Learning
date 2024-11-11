@@ -61,7 +61,7 @@ const enrollmentSchema = new mongoose.Schema({
     lesson: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' },
     score: Number
   }],
-  paymentStatus: { type: String, enum: ['Pending', 'Paid'], default: 'Pending' }
+  paymentStatus: { type: String, enum: ['Pending', 'Paid' ,], default: 'Pending' }
 }, { timestamps: true });
 
 // Models
