@@ -15,7 +15,7 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 // import required modules
-import { useGetAllCoursesQuery } from '../store/Api/Course';
+import courseApi, { useGetAllCoursesQuery } from '../store/Api/Course';
 
 function Home() {
 
@@ -23,16 +23,70 @@ function Home() {
 
     const { isMobile } = useContext(WindowWidthContext)
 
-    const { data: coursesData, isLoading, error } = useGetAllCoursesQuery();
+    const { data: coursesData, isLoading } = useGetAllCoursesQuery();
 
     const { ref, inView } = useInView({
         triggerOnce: true,
         threshold: 0.0,
     });
 
-    function handleCourseCardClick(id) {
-        navigate(`/course/${id}`)
-    }
+    const handleCourseCardClick = (course) => {
+        const path = coursesData.message === 'Continue Learning' 
+            ? `/course/learn/${course.enrollmentId}`
+            : `/course/${course._id}`;
+        navigate(path);
+    };
+
+    const renderCourseCard = (course) => (
+        <CourseCard
+            key={course._id}
+            title={course.title}
+            imageUrl={course.thumbnailImage}
+            instructor={course.instructor.name}
+            description={course.description}
+            vote={course.vote}
+            price={course.price}
+            onClick={() => handleCourseCardClick(course)}
+            showCTA={true}
+            text={coursesData.message === "Continue Learning" ? "Continue Learning" : "Enroll"}
+        />
+    );
+
+    const renderMobileView = () => (
+        <div className='min-h-96 px-4'>
+            <Swiper
+                slidesPerView={1.2}
+                spaceBetween={12}
+                freeMode={true}
+                modules={[FreeMode]}
+                className="text-gray w-full cursor-move"
+            >
+                {coursesData.courses.map((course) => (
+                    <SwiperSlide key={course._id}>
+                        {renderCourseCard(course)}
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+        </div>
+    );
+
+    const renderDesktopView = () => (
+        <div className='px-24 w-full mb-20 flex justify-center items-center'>
+            <div ref={ref} className='masonry'>
+                {coursesData.courses.map((course, index) => (
+                    <motion.div
+                        key={course._id}
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={inView ? { y: 0, opacity: 100 } : {}}
+                        transition={{ delay: 0.1 * index }}
+                        className="masonry-item"
+                    >
+                        {renderCourseCard(course)}
+                    </motion.div>
+                ))}
+            </div>
+        </div>
+    );
 
     return (
 
@@ -96,36 +150,7 @@ function Home() {
 
                         !isLoading && coursesData?.courses?.length > 0 && (
 
-                            <div className='min-h-96 px-4'>
-                                <Swiper
-                                    slidesPerView={1.2}
-                                    spaceBetween={12}
-                                    freeMode={true}
-
-                                    modules={[FreeMode]}
-                                    className="text-gray w-full cursor-move"
-                                >
-
-                                    {
-                                        coursesData.courses.map((course, index) => {
-                                            return <SwiperSlide key={course._id}>
-                                                <CourseCard
-                                                    title={course.title}
-                                                    imageUrl={course.thumbnailImage}
-                                                    instructor={course.instructor.name}
-                                                    description={course.description}
-                                                    vote={course.vote}
-                                                    price={course.price}
-                                                    onClick={() => handleCourseCardClick(course._id)}
-                                                    showCTA={true}
-                                                    text={"Enroll"}
-                                                />
-                                            </SwiperSlide>
-                                        })
-                                    }
-                                </Swiper>
-
-                            </div>
+                            renderMobileView()
 
                         )
 
@@ -138,41 +163,11 @@ function Home() {
 
                     (
 
-                        <div className='px-24 w-full mb-20  flex justify-center items-center'>
+                        !isLoading && coursesData?.courses?.length > 0 && (
 
-                            {
-                                !isLoading && coursesData?.courses?.length > 0 && (
-                                    <div ref={ref} className='masonry'>
-                                        {
-                                            coursesData.courses.map((course, index) => {
-                                                return <motion.div
-                                                    initial={{ y: (100), opacity: 0 }}
-                                                    animate={inView ? { y: 0, opacity: 100 } : {}}
-                                                    transition={{ delay: 0.1 * index }}
-                                                    key={course._id}
-                                                    className="masonry-item"
-                                                >
-                                                    <CourseCard
-                                                        title={course.title}
-                                                        imageUrl={course.thumbnailImage}
-                                                        instructor={course.instructor.name}
-                                                        description={course.description}
-                                                        vote={course.vote}
-                                                        price={course.price}
-                                                        onClick={() => handleCourseCardClick(course._id)}
-                                                        showCTA={true}
-                                                        text={"Enroll"}
-                                                    />
-                                                </motion.div>
-                                            })
-                                        }
+                            renderDesktopView()
 
-                                    </div>
-                                )
-                            }
-
-
-                        </div >
+                        )
 
 
 

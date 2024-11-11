@@ -9,7 +9,17 @@ export const courseApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL, headers: {
     "Authorization": `Bearer ${Cookies.get("token")}`
   }}),
+  keepUnusedDataFor: 300,
+  refetchOnMountOrArgChange: true,
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
+    getUserCourses: builder.query({
+        query: () =>({
+            url: "/user-courses",
+            method: "GET",
+        }),
+    }),
     getAllCourses: builder.query({
         query: () =>({
             url: "/",
@@ -19,6 +29,6 @@ export const courseApi = createApi({
   }),
 });
 
-export const { useGetAllCoursesQuery } = courseApi;
+export const { useGetAllCoursesQuery, useGetUserCoursesQuery } = courseApi;
 
 export default courseApi;

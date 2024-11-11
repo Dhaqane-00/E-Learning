@@ -38,10 +38,11 @@ exports.createEnrollment = async (req, res) => {
   }
 };
 
-// Get all enrollments for a user
+// Get all enrollments for a user And Show All Courses
 exports.getUserEnrollments = async (req, res) => {
   try {
     const userId = req.user.userId;
+    
     const enrollments = await Enrollment.find({ student: userId })
       .populate('student')
       .populate('course')

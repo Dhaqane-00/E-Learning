@@ -6,15 +6,20 @@ import { toast } from 'react-hot-toast';
 import PrimaryButton from '../components/formComponents/PrimaryButton'
 import { ThreeDot } from 'react-loading-indicators';
 
+import courseApi, { useGetAllCoursesQuery } from '../store/Api/Course';
+
+import Cookies from 'js-cookie';
+
+const loggedInUser = Cookies.get("user.name")
+
 function FullCoursePage() {
 
     const navigate = useNavigate();
     const ref = useRef();
     const { courseId } = useParams();
 
-    const loggedInUser = useSelector(registerUser)
+    const { data: courses, isLoading, error } = useGetAllCoursesQuery();
     const [course, setCourse] = useState(null)
-    const [isLoading, setIsLoading] = useState(false)
     const [endCourseIsLoading, setEndCourseIsLoading] = useState(false)
 
     useEffect(() => {
@@ -23,29 +28,12 @@ function FullCoursePage() {
         }
     }, []);
 
-
     useEffect(() => {
-        async function getCourse() {
-            try {
-                setIsLoading(true)
-                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/public/course/${courseId}`);
-                const data = response.data;
-                setCourse(data);
-            }
-            catch (e) {
-                console.error("Error fetching course : ", e);
-            }
-            finally {
-                setIsLoading(false)
-            }
+        if (courses) {
+            const foundCourse = courses.find(c => c._id === courseId);
+            setCourse(foundCourse);
         }
-        getCourse();
-    }, [])
-
-
-
-
-
+    }, [courses, courseId]);
 
     async function handleVoteClick(courseId) {
         try {
@@ -151,20 +139,37 @@ function FullCoursePage() {
 
                         <div>
 
-                            {
-                                course?.instructorName != loggedInUser && <PrimaryButton
-                                    text={"Up Vote"}
-                                    classname={"fixed top-10 right-8 font-semibold"}
-                                    onClick={() => handleVoteClick(courseId)}
-                                />
-                            }
-
                             <div className='w-2/3 pt-36'>
 
-                                <div className='flex gap-4 items-center mb-8'>
-                                    <h1 className='text-4xl font-bold '>{course?.courseName}</h1>
-
-                                    <div className='bg-bgOne  border border-green w-fit px-6 py-2 rounded-full text-sm font-semibold'>{course?.chapters.length} Chapters</div>
+                                <div className='mb-12'>
+                                    <div className='flex gap-4 items-center mb-8'>
+                                        <h1 className='text-4xl font-bold'>{course?.courseName}</h1>
+                                        <div className='bg-bgOne border border-green w-fit px-6 py-2 rounded-full text-sm font-semibold'>
+                                            {course?.chapters.length} Chapters
+                                        </div>
+                                    </div>
+                                    
+                                    <div className='bg-bgTwo p-8 rounded-md'>
+                                        <div className='flex gap-6 mb-6'>
+                                            <div className='flex items-center gap-2'>
+                                                <span className='text-gray'>Instructor:</span>
+                                                <span className='font-semibold'>{course?.instructorName}</span>
+                                            </div>
+                                            <div className='flex items-center gap-2'>
+                                                <span className='text-gray'>Votes:</span>
+                                                <span className='font-semibold'>{course?.votes || 0}</span>
+                                            </div>
+                                            <div className='flex items-center gap-2'>
+                                                <span className='text-gray'>Price:</span>
+                                                <span className='font-semibold'>${course?.price || 'Free'}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className='mb-6'>
+                                            <h3 className='text-gray mb-2'>Description</h3>
+                                            <p className='text-white'>{course?.description}</p>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -188,12 +193,8 @@ function FullCoursePage() {
                             </div>
 
 
-                            {/* when a user ends a course, course will be removed from the user's 'Enrolled course list' */}
-
-                            {/* also if the course is uploaded by the logged in user, do not show 'end course' */}
-
                             {
-                                course?.instructorName != loggedInUser && <PrimaryButton
+                                course?.instructorName == loggedInUser && <PrimaryButton
                                     onClick={handleEndCourse}
                                     text={"End Course"}
                                     isLoading={endCourseIsLoading}
