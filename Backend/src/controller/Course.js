@@ -1,4 +1,4 @@
-const { Course, User } = require('../model/Model');
+const { Course, User, Enrollment } = require('../model/Model');
 const bunnyStorage = require('../utils/bunnycdn');
 // Create a new course
 exports.createCourse = async (req, res) => {
@@ -40,9 +40,9 @@ exports.createCourse = async (req, res) => {
 exports.getAllCourses = async (req, res) => {
   try {
     const courses = await Course.find()
-      .populate('instructor', 'name email role profileImage')
+      .populate('instructor', 'name email role profileImage enrolledCourses')
       .select('-modules');
-    res.json(courses);
+    res.json({message: "Courses fetched successfully", courses});
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch courses', error });
   }
@@ -165,5 +165,81 @@ exports.searchCourses = async (req, res) => {
     res.json(courses);
   } catch (error) {
     res.status(500).json({ message: 'Failed to search courses', error });
+  }
+};
+//Parchase Course
+exports.enrollCourse = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const courseId = req.params.courseId;
+
+    // Check if course exists
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    // Check if already enrolled
+    const existingEnrollment = await Enrollment.findOne({
+      student: userId,
+      course: courseId
+    });
+
+    if (existingEnrollment) {
+      return res.status(400).json({ message: 'Already enrolled in this course' });
+    }
+
+    // Create new enrollment
+    const enrollment = new Enrollment({
+      student: userId,
+      course: courseId,
+      paymentStatus: 'Paid' // You might want to handle this based on your payment logic
+    });
+    await enrollment.save();
+
+    // Add course to user's enrolled courses
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { enrolledCourses: courseId }
+    });
+
+    res.json({ message: 'Course enrolled successfully', enrollment });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to enroll in course', error });
+  }
+};
+
+// get Course Enrolled by User search by user module
+exports.getCourseEnrolledByUser = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const moduleId = req.params.moduleId;
+
+    // Find the course containing the specified module
+    const course = await Course.findOne({ modules: moduleId })
+      .populate('modules')
+      .populate({
+        path: 'modules',
+        populate: {
+          path: 'lessons'
+        }
+      });
+
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    // Check if user is enrolled
+    const enrollment = await Enrollment.findOne({
+      student: userId,
+      course: course._id
+    });
+
+    if (!enrollment) {
+      return res.status(403).json({ message: 'Not enrolled in this course' });
+    }
+
+    res.json(course);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch enrolled course', error });
   }
 };

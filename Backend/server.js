@@ -5,6 +5,7 @@ const userRouter = require('./src/routes/userRouter');
 const courseRouter = require('./src/routes/CourseRouter');
 const moduleRouter = require('./src/routes/ModuleRouter');
 const lessonRouter = require('./src/routes/LessonRouter');
+const enrollmentRouter = require('./src/routes/enrollment');
 const app = express();
 require('dotenv').config();
 const cors = require('cors');
@@ -31,6 +32,7 @@ app.use('/api/users', userRouter);
 app.use('/api/courses', courseRouter);
 app.use('/api/modules', moduleRouter);
 app.use('/api/lessons', lessonRouter);
+app.use('/api/enrollments', enrollmentRouter);
 
 app.listen(port, Host, () => {
   console.log(`Server is running on port ${port}`);

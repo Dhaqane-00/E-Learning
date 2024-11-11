@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext } from 'react'
 import CourseCard from '../components/CourseCard';
 import { Link, redirect, useNavigate } from 'react-router-dom';
-import axios from '../config/axiosConfig'
 import { ThreeDot } from 'react-loading-indicators'
 import Reviews from '../components/Reviews'
 import { motion } from 'framer-motion'
@@ -16,51 +15,24 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 // import required modules
+import { useGetAllCoursesQuery } from '../store/Api/Course';
 
 function Home() {
 
     const navigate = useNavigate();
 
-    const [courses, setCourses] = useState({});
-    const [isLoading, setIsLoading] = useState(false)
-
-
     const { isMobile } = useContext(WindowWidthContext)
 
+    const { data: coursesData, isLoading, error } = useGetAllCoursesQuery();
 
     const { ref, inView } = useInView({
-        triggerOnce: true, // Animates only the first time it enters the viewport
-        threshold: 0.0,    // Trigger animation when 10% of the component is visible
-    })
-
-
-    useEffect(() => {
-        async function getAllCourses() {
-            try {
-                setIsLoading(true)
-                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/public/all-courses`);
-                setCourses(response.data)
-            }
-            catch (e) {
-                console.error("Error fetching courses : ", e);
-            }
-            finally {
-                setIsLoading(false)
-            }
-        }
-        getAllCourses();
-
-    }, [])
-
-
-console.log(courses);
+        triggerOnce: true,
+        threshold: 0.0,
+    });
 
     function handleCourseCardClick(id) {
-
         navigate(`/course/${id}`)
     }
-
-
 
     return (
 
@@ -122,7 +94,7 @@ console.log(courses);
                     // -------------------- MOBILE VIEW ---------------------
                     (
 
-                        !isLoading && (
+                        !isLoading && coursesData?.courses?.length > 0 && (
 
                             <div className='min-h-96 px-4'>
                                 <Swiper
@@ -135,18 +107,18 @@ console.log(courses);
                                 >
 
                                     {
-                                        Object.keys(courses).map((key, index) => {
-                                            return <SwiperSlide key={index}>
+                                        coursesData.courses.map((course, index) => {
+                                            return <SwiperSlide key={course._id}>
                                                 <CourseCard
-                                                    title={courses[key].courseName}
-                                                    imageUrl={courses[key].imageUrl}
-                                                    instructor={courses[key].instructorName}
-                                                    description={courses[key].courseDescription}
-                                                    vote={courses[key].vote}
-                                                    onClick={() => handleCourseCardClick(key)}
+                                                    title={course.title}
+                                                    imageUrl={course.thumbnailImage}
+                                                    instructor={course.instructor.name}
+                                                    description={course.description}
+                                                    vote={course.vote}
+                                                    price={course.price}
+                                                    onClick={() => handleCourseCardClick(course._id)}
                                                     showCTA={true}
                                                     text={"Enroll"}
-
                                                 />
                                             </SwiperSlide>
                                         })
@@ -169,33 +141,29 @@ console.log(courses);
                         <div className='px-24 w-full mb-20  flex justify-center items-center'>
 
                             {
-                                !isLoading &&
-
-                                (
+                                !isLoading && coursesData?.courses?.length > 0 && (
                                     <div ref={ref} className='masonry'>
                                         {
-                                            Object.keys(courses).map((key, index) => {
-
+                                            coursesData.courses.map((course, index) => {
                                                 return <motion.div
                                                     initial={{ y: (100), opacity: 0 }}
                                                     animate={inView ? { y: 0, opacity: 100 } : {}}
                                                     transition={{ delay: 0.1 * index }}
-
-                                                    key={key} className="masonry-item">
-
+                                                    key={course._id}
+                                                    className="masonry-item"
+                                                >
                                                     <CourseCard
-                                                        title={courses[key].courseName}
-                                                        imageUrl={courses[key].imageUrl}
-                                                        instructor={courses[key].instructorName}
-                                                        description={courses[key].courseDescription}
-                                                        vote={courses[key].vote}
-                                                        onClick={() => handleCourseCardClick(key)}
+                                                        title={course.title}
+                                                        imageUrl={course.thumbnailImage}
+                                                        instructor={course.instructor.name}
+                                                        description={course.description}
+                                                        vote={course.vote}
+                                                        price={course.price}
+                                                        onClick={() => handleCourseCardClick(course._id)}
                                                         showCTA={true}
                                                         text={"Enroll"}
-
                                                     />
                                                 </motion.div>
-
                                             })
                                         }
 

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import CourseCard from '../components/CourseCard'
 import { useNavigate } from 'react-router-dom'
 import axios from '../config/axiosConfig'
@@ -18,52 +18,28 @@ import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 // import required modules
 
+import { useGetAllCoursesQuery } from '../store/Api/Course';
+
 
 function AllCourses() {
 
     const navigate = useNavigate();
 
-    const [isLoading, setIsLoading] = useState(true);
-
-
-    const [courses, setCourses] = useState({})
-
     const [searchQuery, setSearchQuery] = useState("");
 
     const { isMobile } = useContext(WindowWidthContext)
 
-
-    useEffect(() => {
-
-        async function getAllCourses() {
-            try {
-                setIsLoading(true);
-                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/public/all-courses`);
-                setCourses(response.data)
-
-            }
-            catch (e) {
-                console.error("Error fetching courses : ", e);
-            }
-            finally {
-                setIsLoading(false)
-            }
-        }
-        getAllCourses();
-
-
-    }, [])
+    const { data: courses = {}, isLoading, error } = useGetAllCoursesQuery();
 
     console.log(courses);
 
 
 
 
-    const filteredCourses = Object.keys(courses).filter(key =>
-        ''.toLowerCase().includes(searchQuery.toLowerCase())
-        ||
-        ''.toLowerCase().includes(searchQuery.toLowerCase())
-    ).map(key => courses[key]);
+    const filteredCourses = courses?.courses?.filter(course =>
+        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
 
 
 
@@ -169,18 +145,18 @@ function AllCourses() {
 
                                     {
 
-                                        Object.keys(searchQuery ? filteredCourses : courses).map((key, index) => {
-                                            return <SwiperSlide key={index}>
+                                        (searchQuery ? filteredCourses : courses?.courses || []).map((course, index) => {
+                                            return <SwiperSlide key={course._id}>
                                                 <CourseCard
-                                                    title={searchQuery ? filteredCourses[key].courseName : courses[key].courseName}
-                                                    imageUrl={searchQuery ? filteredCourses[key].imageUrl : courses[key].imageUrl}
-                                                    instructor={searchQuery ? filteredCourses[key].instructorName : courses[key].instructorName}
-                                                    description={searchQuery ? filteredCourses[key].courseDescription : courses[key].courseDescription}
-                                                    vote={searchQuery ? filteredCourses[key].vote : courses[key].vote}
-                                                    onClick={() => handleCourseCardClick(key)}
+                                                    title={course.title}
+                                                    imageUrl={course.thumbnailImage}
+                                                    instructor={course.instructor.name}
+                                                    description={course.description}
+                                                    vote={course.vote}
+                                                    price={course.price}
+                                                    onClick={() => handleCourseCardClick(course._id)}
                                                     showCTA={true}
                                                     text={"Enroll"}
-
                                                 />
                                             </SwiperSlide>
                                         })
@@ -217,27 +193,26 @@ function AllCourses() {
 
                                         <div className='masonry'>
                                             {
-                                                Object.keys(searchQuery ? filteredCourses : courses).map((key, index) => {
+                                                (searchQuery ? filteredCourses : courses?.courses || []).map((course, index) => {
                                                     return <motion.div
+                                                        key={course._id}
                                                         initial={{ y: (100), opacity: 0 }}
                                                         animate={{ y: 0, opacity: 100 }}
                                                         transition={{ delay: 0.1 * index }}
                                                         className='masonry-item'
                                                     >
                                                         <CourseCard
-                                                            title={searchQuery ? filteredCourses[key].courseName : courses[key].courseName}
-                                                            imageUrl={searchQuery ? filteredCourses[key].imageUrl : courses[key].imageUrl}
-                                                            instructor={searchQuery ? filteredCourses[key].instructorName : courses[key].instructorName}
-                                                            description={searchQuery ? filteredCourses[key].courseDescription : courses[key].courseDescription}
-                                                            vote={searchQuery ? filteredCourses[key].vote : courses[key].vote}
-                                                            onClick={() => handleCourseCardClick(key)}
+                                                            title={course.title}
+                                                            imageUrl={course.thumbnailImage}
+                                                            instructor={course.instructor.name}
+                                                            description={course.description}
+                                                            vote={course.vote}
+                                                            price={course.price}
+                                                            onClick={() => handleCourseCardClick(course._id)}
                                                             showCTA={true}
                                                             text={"Enroll"}
                                                         />
-
                                                     </motion.div>
-
-
                                                 })
                                             }
                                         </div>

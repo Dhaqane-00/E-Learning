@@ -4,7 +4,7 @@ import { IoPersonSharp } from "react-icons/io5";
 import SecondaryButton from './formComponents/SecondaryButton';
 
 
-const CourseCard = ({ onClick, title, instructor, description, vote, showCTA, text, imageUrl, isLoading }) => {
+const CourseCard = ({ onClick, title, instructor, description, vote, showCTA, text, imageUrl, isLoading, price }) => {
 
   return (
     <div className="course-card relative bg-bgTwo p-3 w-74 overflow-hidden hover:border-2 hover:border-border border-2 border-bgTwo transition-all rounded-md h-fit text-sm sm:w-full sm:text-base sm:96 sm:p-6">
@@ -34,10 +34,17 @@ const CourseCard = ({ onClick, title, instructor, description, vote, showCTA, te
 
         <p className="mb-4">{description}</p>
 
-        <div className="course-card-rating absolute top-0 right-0 flex items-center bg-gradientForBg min-w-4 min-h-4 p-2 m-2 rounded">
-          <div className='flex gap-2 justify-center items-center text-bgOne font-semibold text-xs '>{vote} <BiSolidUpvote className='-mt-0.5' /></div>
-        </div>
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-green font-semibold">
+            {price === 0 ? 'Free' : `$${price}`}
+          </p>
 
+          <div className="course-card-rating flex items-center bg-gradientForBg min-w-4 min-h-4 p-2 rounded">
+            <div className='flex gap-2 justify-center items-center text-bgOne font-semibold text-xs'>
+              {vote} <BiSolidUpvote className='-mt-0.5' />
+            </div>
+          </div>
+        </div>
       </div>
 
       {

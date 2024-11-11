@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ['Admin', 'Instructor', 'Student'], default: 'Student' },
   profileImage: { type: String, default: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png' },
-  enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course', default: [] }]
+  enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course', default: [] }],
 },
  { timestamps: true }
 );
@@ -19,7 +19,7 @@ const courseSchema = new mongoose.Schema({
   description: { type: String, required: true },
   instructor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   price: { type: Number, default: 0 },
-  category: String,
+  category: { type: String, default: "General" },
   thumbnailImage: { type: String, default: 'https://cdn.pixabay.com/photo/2022/01/28/12/17/distance-learning-6974511_1280.jpg' },
   modules: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Module', default: [] }],
   tags: [String]

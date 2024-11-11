@@ -14,21 +14,21 @@ function Footer() {
 
       <ul className='flex gap-4 sm:w-1/5  justify-between items-center text-sm sm:text-sm mx-auto text-gray'>
 
-        <Link to='https://github.com/RishirajSrkr' target='_blank'>
+        <Link to='https://github.com/Dhaqane-00' target='_blank'>
           <div className='flex gap-2 jusc
            items-center'>
             <FaGithub  />
             <h4>Github</h4>
           </div>
         </Link>
-        <Link to='https://www.linkedin.com/in/rishiraj-sarkar/' target='_blank'>
+        <Link to='#' target='_blank'>
           <div className='flex gap-2 jusc
            items-center'>
             <FaLinkedin  />
             <h4>LinkedIn</h4>
           </div>
         </Link>
-        <Link to='mailto:rishirajsarkar.jpg@gmail.com' target='_blank'>
+        <Link to='mailto:AbdilaahiMowliid@gmail.com' target='_blank'>
           <div className='flex gap-2 jusc
            items-center'>
             <FaEnvelope />

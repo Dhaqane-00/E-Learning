@@ -68,7 +68,8 @@ exports.login = async (req, res) => {
 exports.getProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const user = await User.findById(userId).select('-password');
+    //populate enrolledCourses
+    const user = await User.findById(userId).select('-password').populate('enrolledCourses');
     if (!user) return res.status(404).json({ message: 'User not found.' });
 
     res.json({ message: "User profile fetched successfully.", user });
