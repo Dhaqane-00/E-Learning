@@ -40,91 +40,91 @@ exports.createCourse = async (req, res) => {
 };
 
 // Get all courses with payment status for home page
-exports.getAllCourses = async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    
-    
-    // Get all courses with instructor details
-    const courses = await Course.find()
-      .populate('instructor', 'name email role profileImage')
-      .select('-modules');
-
-    if (!userId) {
-      // If user is not logged in, return courses without enrollment status
-      return res.status(200).json({
-        message: "Courses fetched successfully",
-        courses: courses.map(course => ({
-          ...course.toObject(),
-          enrollmentStatus: null,
-          message: "Enroll Now"
-        }))
-      });
-    }
-
-    // Get user's enrollments
-    const enrollments = await Enrollment.find({ student: userId });
-    const enrollmentMap = new Map(
-      enrollments.map(enrollment => [
-        enrollment.course.toString(),
-        {
-          status: enrollment.paymentStatus,
-          progress: enrollment.progress,
-          enrollmentId: enrollment._id
-        }
-      ])
-    );
-
-    // Add enrollment status and appropriate message to each course
-    const coursesWithStatus = courses.map(course => {
-      const enrollment = enrollmentMap.get(course._id.toString());
-      
-      if (!enrollment) {
-        return {
-          ...course.toObject(),
-          enrollmentStatus: null,
-          message: "Enroll Now"
-        };
-      }
-
-      return {
-        ...course.toObject(),
-        enrollmentStatus: enrollment.status,
-        enrollmentId: enrollment.enrollmentId,
-        progress: enrollment.progress,
-        message: enrollment.status === 'Paid' 
-          ? "Continue Learning"
-          : "Complete Payment"
-      };
-    });
-
-    res.status(200).json({
-      message: "Courses fetched successfully",
-      courses: coursesWithStatus
-
-    });
-
-  } catch (error) {
-    console.log(error);
-    
-    res.status(500).json({ 
-      message: 'Failed to fetch courses', 
-      error: error.message 
-    });
-  }
-};
-
-// // Get all courses with instructor details and without modules
 // exports.getAllCourses = async (req, res) => {
 //   try {
+//     const userId = req.user.userId;
+    
+    
+//     // Get all courses with instructor details
 //     const courses = await Course.find()
-//       .populate('instructor', 'name email role profileImage enrolledCourses')
+//       .populate('instructor', 'name email role profileImage')
 //       .select('-modules');
-//     res.json({message: "Courses fetched successfully", courses});
+
+//     if (!userId) {
+//       // If user is not logged in, return courses without enrollment status
+//       return res.status(200).json({
+//         message: "Courses fetched successfully",
+//         courses: courses.map(course => ({
+//           ...course.toObject(),
+//           enrollmentStatus: null,
+//           message: "Enroll Now"
+//         }))
+//       });
+//     }
+
+//     // Get user's enrollments
+//     const enrollments = await Enrollment.find({ student: userId });
+//     const enrollmentMap = new Map(
+//       enrollments.map(enrollment => [
+//         enrollment.course.toString(),
+//         {
+//           status: enrollment.paymentStatus,
+//           progress: enrollment.progress,
+//           enrollmentId: enrollment._id
+//         }
+//       ])
+//     );
+
+//     // Add enrollment status and appropriate message to each course
+//     const coursesWithStatus = courses.map(course => {
+//       const enrollment = enrollmentMap.get(course._id.toString());
+      
+//       if (!enrollment) {
+//         return {
+//           ...course.toObject(),
+//           enrollmentStatus: null,
+//           message: "Enroll Now"
+//         };
+//       }
+
+//       return {
+//         ...course.toObject(),
+//         enrollmentStatus: enrollment.status,
+//         enrollmentId: enrollment.enrollmentId,
+//         progress: enrollment.progress,
+//         message: enrollment.status === 'Paid' 
+//           ? "Continue Learning"
+//           : "Complete Payment"
+//       };
+//     });
+
+//     res.status(200).json({
+//       message: "Courses fetched successfully",
+//       courses: coursesWithStatus
+
+//     });
+
 //   } catch (error) {
-//     res.status(500).json({ message: 'Failed to fetch courses', error });
+//     console.log(error);
+    
+//     res.status(500).json({ 
+//       message: 'Failed to fetch courses', 
+//       error: error.message 
+//     });
 //   }
 // };
+
+// // Get all courses with instructor details and without modules
+exports.getAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find()
+      .populate('instructor', 'name email role profileImage enrolledCourses')
+      .select('-modules');
+    res.json({message: "Courses fetched successfully", courses});
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch courses', error });
+  }
+};
 //get All Courses that user is enrolled in
 exports.getAllCoursesByUser = async (req, res) => {
   try {

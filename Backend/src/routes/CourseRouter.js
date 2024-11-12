@@ -6,7 +6,7 @@ const upload = require('../middleware/upload');
 
 // Public routes
 router.get('/search', searchCourses);
-router.get('/', authenticate, getAllCourses);
+router.get('/', getAllCourses);
 router.get('/:id', getCourseById);
 
 // Protected routes (require authentication)
