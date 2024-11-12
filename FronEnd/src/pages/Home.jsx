@@ -37,6 +37,10 @@ function Home() {
         navigate(path);
     };
 
+    const handleViewClick = (course) => {
+        navigate(`/course/${course._id}`);
+    };
+
     const renderCourseCard = (course) => (
         <CourseCard
             key={course._id}
@@ -47,6 +51,7 @@ function Home() {
             vote={course.vote}
             price={course.price}
             onClick={() => handleCourseCardClick(course)}
+            onClickView={() => handleViewClick(course)}
             showCTA={true}
             text={coursesData.message === "Continue Learning" ? "Continue Learning" : "Enroll"}
         />

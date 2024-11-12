@@ -52,7 +52,7 @@ exports.getAllCourses = async (req, res) => {
 
     if (!userId) {
       // If user is not logged in, return courses without enrollment status
-      return res.json({
+      return res.status(200).json({
         message: "Courses fetched successfully",
         courses: courses.map(course => ({
           ...course.toObject(),
@@ -98,7 +98,7 @@ exports.getAllCourses = async (req, res) => {
       };
     });
 
-    res.json({
+    res.status(200).json({
       message: "Courses fetched successfully",
       courses: coursesWithStatus
 

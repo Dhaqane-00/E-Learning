@@ -47,37 +47,33 @@ function AllCourses() {
 
 
     async function handleCourseCardClick(course) {
-        if (course.message === 'Continue Learning') {
-            navigate(`/course/learn/${course.enrollmentId}`);
-        } else {
-            try {
-                navigate(`/course/${course._id}`);
-
-                toast.success("Course Enrolled", {
-                    position: "top-right",
-                    style: {
-                        background: "#1C1210",
-                        color: "#E5E6E6",
-                    }
-                });
-
-                const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/course/${course._id}/enroll-course`);
-                console.log(response.data);
-            }
-            catch (error) {
-                toast.error("Enroll Failed", {
-                    position: "top-right",
-                    style: {
-                        background: "#1C1210",
-                        color: "#E5E6E6",
-                    }
-                });
-                console.log(error);
-            }
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/course/${course._id}/enroll-course`);
+            
+            toast.success("Course Enrolled", {
+                position: "top-right",
+                style: {
+                    background: "#1C1210",
+                    color: "#E5E6E6",
+                }
+            });
+            
+            navigate(`/course/learn/${response.data.enrollmentId}`);
+        } catch (error) {
+            toast.error("Enrollment Failed", {
+                position: "top-right",
+                style: {
+                    background: "#1C1210",
+                    color: "#E5E6E6",
+                }
+            });
+            console.log(error);
         }
     }
 
-
+    const handleViewClick = (course) => {
+        navigate(`/course/${course._id}`);
+    };
 
     const headline = "</ Learn for Free />"
 
@@ -149,8 +145,9 @@ function AllCourses() {
                                                     vote={course.vote}
                                                     price={course.price}
                                                     onClick={() => handleCourseCardClick(course)}
+                                                    onClickView={() => handleViewClick(course)}
                                                     showCTA={true}
-                                                    text={course.message === "Continue Learning" ? "Continue Learning" : "Enroll"}
+                                                    text="Enroll"
                                                 />
                                             </SwiperSlide>
                                         })
@@ -203,8 +200,9 @@ function AllCourses() {
                                                             vote={course.vote}
                                                             price={course.price}
                                                             onClick={() => handleCourseCardClick(course)}
+                                                            onClickView={() => handleViewClick(course)}
                                                             showCTA={true}
-                                                            text={course.message === "Continue Learning" ? "Continue Learning" : "Enroll"}
+                                                            text="Enroll"
                                                         />
                                                     </motion.div>
                                                 })

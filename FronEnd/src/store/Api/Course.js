@@ -22,13 +22,22 @@ export const courseApi = createApi({
     }),
     getAllCourses: builder.query({
         query: () =>({
+            headers: {
+              "Authorization": `Bearer ${Cookies.get("token")}`
+            },
             url: "/",
+            method: "GET",
+        }),
+    }),
+    getCourseById: builder.query({
+        query: (id) =>({
+            url: `/${id}`,
             method: "GET",
         }),
     }),
   }),
 });
 
-export const { useGetAllCoursesQuery, useGetUserCoursesQuery } = courseApi;
+export const { useGetAllCoursesQuery, useGetUserCoursesQuery, useGetCourseByIdQuery } = courseApi;
 
 export default courseApi;

@@ -1,64 +1,55 @@
 import React from 'react';
-import { BiSolidUpvote } from "react-icons/bi";
-import { IoPersonSharp } from "react-icons/io5";
-import SecondaryButton from './formComponents/SecondaryButton';
+import { motion } from 'framer-motion';
 
+function CourseCard({
+    title,
+    imageUrl,
+    instructor,
+    description,
+    vote,
+    price,
+    onClick,
+    onClickView,
+    showCTA,
+    text
+}) {
+    return (
+        <div className="bg-bgTwo p-4 rounded-lg border border-border" onClick={onClickView}>
+            {/* Course Image */}
+            <img 
+                src={imageUrl} 
+                alt={title}
+                className="w-full h-48 object-cover rounded-lg mb-4"
+            />
 
-const CourseCard = ({ onClick, title, instructor, description, vote, showCTA, text, imageUrl, isLoading, price }) => {
+            {/* Course Info */}
+            <div className="space-y-2">
+                <h3 className="text-white text-xl font-semibold">{title}</h3>
+                <p className="text-gray text-sm">{instructor}</p>
+                <p className="text-gray text-sm line-clamp-2">{description}</p>
+                
+                {/* Stats */}
+                <div className="flex justify-between items-center">
+                    <span className="text-green">⭐ {vote}</span>
+                    <span className="text-white font-semibold">
+                        {price === 0 ? 'Free' : `$${price}`}
+                    </span>
+                </div>
 
-  return (
-    <div 
-      className="course-card relative bg-bgTwo p-3 w-74 overflow-hidden hover:border-2 hover:border-border border-2 border-bgTwo transition-all rounded-md h-fit text-sm sm:w-full sm:text-base sm:96 sm:p-6 cursor-pointer" 
-      onClick={onClick}
-    >
-
-      {imageUrl && (
-        <img
-          src={imageUrl}
-          alt="courseThumbnailImage"
-          className="w-full h-40 object-cover rounded-sm mb-6 sm:h-48"
-        />
-      )}
-
-
-      <h3 className="text-xl font-semibold mb-2 text-white sm:text-2xl">{title}</h3>
-
-
-      <div className='text-gray'>
-
-
-        {
-          instructor && <div className=' flex gap-2 items-center mb-2'>
-            <IoPersonSharp className='text-green text-sm' />
-            <p className="font-semibold ">{instructor}</p>
-          </div>
-        }
-
-
-        <p className="mb-4">{description}</p>
-
-        <div className="flex justify-between items-center mb-4">
-          <p className="text-green font-semibold">
-            {price === 0 ? 'Free' : `$${price}`}
-          </p>
-
-          <div className="course-card-rating flex items-center bg-gradientForBg min-w-4 min-h-4 p-2 rounded">
-            <div className='flex gap-2 justify-center items-center text-bgOne font-semibold text-xs'>
-              {vote} <BiSolidUpvote className='-mt-0.5' />
+                {/* Action Buttons */}
+                {showCTA && (
+                    <div className="flex gap-2 mt-4">
+                        <button
+                            onClick={onClick}
+                            className="px-4 py-2 bg-green text-bgOne rounded-full font-semibold hover:bg-opacity-90 transition-colors text-sm"
+                        >
+                            {text}
+                        </button>
+                    </div>
+                )}
             </div>
-          </div>
         </div>
-      </div>
-
-      {
-        showCTA && (
-          <div onClick={e => e.stopPropagation()}>
-            <SecondaryButton isLoading={isLoading} text={text} classname={"text-gray"} onClick={onClick} />
-          </div>
-        )
-      }
-    </div>
-  );
-};
+    );
+}
 
 export default CourseCard;
