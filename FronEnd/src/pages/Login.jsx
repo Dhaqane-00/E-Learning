@@ -121,11 +121,27 @@ function Login() {
                         <PrimaryButton
                             isLoading={isLoading}
                             text={"Login"}
-                            classname={'rounded-full w-24 py-2 shadow-2xl shadow-lime-800  font-semibold'}
+                            classname={'rounded-full w-24 py-2 shadow-2xl shadow-lime-800 font-semibold'}
                             onClick={handleSubmit}
-                        ></PrimaryButton>
+                        />
 
+                        <div className="flex items-center w-full my-4">
+                            <div className="flex-1 border-t border-gray-300"></div>
+                            <span className="px-3 text-gray">or</span>
+                            <div className="flex-1 border-t border-gray-300"></div>
+                        </div>
 
+                        <button
+                            type="button"
+                            className="w-full flex items-center justify-center gap-2 bg-white text-gray-700 rounded-full py-2 px-4 hover:bg-gray-100 transition-colors"
+                        >
+                            <img 
+                                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
+                                alt="Google logo" 
+                                className="w-5 h-5"
+                            />
+                            Continue with Google
+                        </button>
 
                         <div className='text-left mt-6 '>
                             <p className='text-gray text-sm'>Don't have an account? <Link to={"/register"}>Register</Link></p>
