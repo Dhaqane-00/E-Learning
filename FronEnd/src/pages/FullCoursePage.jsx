@@ -7,6 +7,7 @@ import PrimaryButton from '../components/formComponents/PrimaryButton'
 import { ThreeDot } from 'react-loading-indicators';
 import { useGetCourseByIdQuery } from '../store/Api/Course';
 import Cookies from 'js-cookie';
+import { useCreateEnrollmentMutation } from '../store/Api/Enrollment';
 
 function FullCoursePage() {
 
@@ -15,10 +16,11 @@ function FullCoursePage() {
     const { courseId } = useParams();
 
     const { data: course, isLoading, error } = useGetCourseByIdQuery(courseId);
-    const [endCourseIsLoading, setEndCourseIsLoading] = useState(false)
+    const [createEnrollment] = useCreateEnrollmentMutation();
+    const [isEnrolling, setIsEnrolling] = useState(false);
 
     // Get logged-in user ID from cookies
-    const loggedInUserId = Cookies.get('userId');
+    const loggedInUserId = JSON.parse(Cookies.get('user'))?._id;
 
     useEffect(() => {
         if (ref.current) {
@@ -103,7 +105,8 @@ function FullCoursePage() {
 
     const handleEnrollCourse = async () => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/course/${courseId}/enroll-course`);
+            setIsEnrolling(true);
+            const response = await createEnrollment(courseId).unwrap();
             
             toast.success("Successfully enrolled!", {
                 position: "top-right",
@@ -113,153 +116,122 @@ function FullCoursePage() {
                 }
             });
             
-            navigate(`/course/learn/${response.data.enrollmentId}`);
+            navigate(`/course/learn/${response.enrollment._id}`);
         } catch (error) {
-            toast.error("Enrollment failed", {
+            toast.error(error.data?.message || "Failed to enroll in course", {
                 position: "top-right",
                 style: {
                     background: "#1C1210",
                     color: "#E5E6E6",
                 }
             });
-            console.log(error);
+        } finally {
+            setIsEnrolling(false);
         }
     };
 
+    const renderActionButton = () => {
+        if (!loggedInUserId) {
+            return (
+                <PrimaryButton
+                    text="Login to Enroll"
+                    onClick={() => navigate('/login')}
+                    classname="mt-6"
+                />
+            );
+        }
 
+        if (course?.instructor?._id === loggedInUserId) {
+            return (
+                <PrimaryButton
+                    text="Edit Course"
+                    onClick={() => navigate(`/course/edit/${courseId}`)}
+                    classname="mt-6"
+                />
+            );
+        }
 
+        if (course?.isEnrolled) {
+            return (
+                <PrimaryButton
+                    text="Continue Learning"
+                    onClick={() => navigate(`/course/learn/${course.enrollmentId}`)}
+                    classname="mt-6"
+                />
+            );
+        }
+
+        return (
+            <PrimaryButton
+                text={course?.price === 0 ? "Enroll Now (Free)" : `Enroll Now ($${course?.price})`}
+                onClick={handleEnrollCourse}
+                isLoading={isEnrolling}
+                classname="mt-6"
+            />
+        );
+    };
+
+    if (isLoading) {
+        return (
+            <div className='flex justify-center items-center min-h-screen bg-bgOne'>
+                <ThreeDot color="#9CF57F" size="small" />
+            </div>
+        );
+    }
 
     return (
-        <div ref={ref} className='bg-bgOne text-white px-24 pb-10 min-h-screen'>
+        <div className='bg-bgOne text-white px-4 sm:px-24 pb-10 min-h-screen'>
+            {/* Course Header */}
+            <div className='pt-8 sm:pt-16'>
+                <h1 className='text-3xl sm:text-5xl font-bold mb-4'>{course?.title}</h1>
+                <p className='text-gray mb-6'>{course?.description}</p>
+                
+                {/* Instructor Info */}
+                <div className='flex items-center gap-4 mb-6'>
+                    <img 
+                        src={course?.instructor?.profileImage} 
+                        alt={course?.instructor?.name}
+                        className='w-12 h-12 rounded-full object-cover'
+                    />
+                    <div>
+                        <p className='text-white font-medium'>{course?.instructor?.name}</p>
+                        <p className='text-gray text-sm'>{course?.instructor?.email}</p>
+                    </div>
+                </div>
 
-            <GoBack
-                text={"Go Back"}
-                goWhere={"/all-courses"}
-            />
+                {/* Course Details */}
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8'>
+                    <div className='bg-bgTwo p-6 rounded-lg border border-border'>
+                        <h3 className='text-xl font-semibold mb-4'>Course Details</h3>
+                        <p className='text-gray mb-2'>Category: {course?.category}</p>
+                        <p className='text-gray mb-2'>Price: ${course?.price}</p>
+                        <p className='text-gray'>Created: {new Date(course?.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    
+                    <div className='bg-bgTwo p-6 rounded-lg border border-border'>
+                        <img 
+                            src={course?.thumbnailImage} 
+                            alt={course?.title}
+                            className='w-full h-48 object-cover rounded-lg'
+                        />
+                    </div>
+                </div>
 
+                {/* Action Button */}
+                {renderActionButton()}
 
-            {
-                isLoading ?
-
-                    (
-
-                        <div className='flex justify-center items-center min-h-screen text-center'>
-                            <ThreeDot color="#9CF57F" size="small" />
-                        </div>
-                    )
-
-                    :
-
-                    (
-
-
-
-                        <div>
-
-                            {/* Show UpVote button only if the user is not the instructor */}
-                            {course?.instructor?._id !== loggedInUserId && (
-                                <PrimaryButton
-                                    text={"Up Vote"}
-                                    classname={"fixed top-10 right-8 font-semibold"}
-                                    onClick={() => handleVoteClick(courseId)}
-                                />
-                            )}
-
-                            <div className='w-2/3 pt-36'>
-
-                                <div className='mb-8'>
-                                    <img 
-                                        src={course?.thumbnailImage} 
-                                        alt={course?.title}
-                                        className="w-full h-[400px] object-cover rounded-lg"
-                                    />
-                                </div>
-
-                                <div className='flex gap-4 items-center mb-8'>
-                                    <h1 className='text-4xl font-bold '>{course?.title}</h1>
-
-                                    <div className='bg-bgOne  border border-green w-fit px-6 py-2 rounded-full text-sm font-semibold'>{course?.modules?.length || 0} Modules</div>
-                                </div>
-
-                                <div className='mb-12'>
-                                    <div className='flex gap-6 mb-6'>
-                                        <div className='flex items-center gap-3'>
-                                            <img 
-                                                src={course?.instructor?.profileImage} 
-                                                alt={course?.instructor?.name}
-                                                className="w-10 h-10 rounded-full object-cover"
-                                            />
-                                            <div>
-                                                <span className='text-gray block text-sm'>Instructor</span>
-                                                <span className='font-semibold'>{course?.instructor?.name}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className='flex items-center gap-2'>
-                                            <span className='text-gray'>Category:</span>
-                                            <span className='font-semibold'>{course?.category}</span>
-                                        </div>
-
-                                        <div className='flex items-center gap-2'>
-                                            <span className='text-gray'>Price:</span>
-                                            <span className='font-semibold'>
-                                                {course?.price === 0 ? 'Free' : `$${course?.price}`}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className='mb-6'>
-                                        <h3 className='text-gray mb-2'>Description</h3>
-                                        <p className='text-white'>{course?.description}</p>
-                                    </div>
-
-                                    {course?.tags?.length > 0 && (
-                                        <div className='flex gap-2 flex-wrap'>
-                                            {course.tags.map((tag, index) => (
-                                                <span 
-                                                    key={index}
-                                                    className='bg-bgOne px-3 py-1 rounded-full text-sm'
-                                                >
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div>
-                                    {course?.modules?.map((module, index) => (
-                                        <div key={index} className="mb-4">
-                                            {/* Add your module rendering logic here */}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-
-                            <PrimaryButton
-                                onClick={handleEndCourse}
-                                text={"End Course"}
-                                isLoading={endCourseIsLoading}
-                            />
-
-                            <PrimaryButton
-                                text={course?.price === 0 ? "Enroll Now (Free)" : `Enroll Now ($${course?.price})`}
-                                onClick={handleEnrollCourse}
-                                classname="mt-6"
-                            />
-
-                        </div>
-                    )
-
-
-            }
-
-
+                {/* Modules Section */}
+                {course?.modules?.length > 0 ? (
+                    <div className='mt-8'>
+                        <h2 className='text-2xl font-bold mb-4'>Course Content</h2>
+                        {/* Add your modules list here */}
+                    </div>
+                ) : (
+                    <p className='text-gray mt-8'>No modules available yet.</p>
+                )}
+            </div>
         </div>
-    )
-
-
+    );
 }
 
 export default FullCoursePage

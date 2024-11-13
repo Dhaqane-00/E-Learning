@@ -8,8 +8,9 @@ const setToken = (token) => {
         secure: true  // Required when using SameSite=None
     });
 }
+//save user in cookies
 const setUser = (user) => {
-    Cookies.set("user", user, {
+    Cookies.set("user", JSON.stringify(user), {
         sameSite: 'None',
         secure: true  // Required when using SameSite=None
     });
@@ -40,9 +41,11 @@ const authApi = createApi({
                     console.log(formData);
                     const result = await queryFulfilled;
                     setToken(result.data.token);
+                    //save User in cookies
                     setUser(result.data.user);
-                    //save user in local storage
-                    localStorage.setItem("user", JSON.stringify(result.data.user));
+                    //how to get user from cookies
+                    const user = JSON.parse(Cookies.get("user"));
+                    console.log("user", user);
                 } catch (error) {
                     console.log(error);
                 }

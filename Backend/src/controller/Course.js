@@ -139,7 +139,11 @@ exports.getAllCoursesByUser = async (req, res) => {
 // Get course by  details and modules
 exports.getCourseById = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id)
+    const courseId = req.params.id;
+    const userId = req.user?.userId; // Optional chaining as user might not be logged in
+
+    // Get course with instructor details and modules
+    const course = await Course.findById(courseId)
       .populate('instructor', 'name email profileImage')
       .populate({
         path: 'modules',
@@ -153,9 +157,32 @@ exports.getCourseById = async (req, res) => {
       return res.status(404).json({ message: 'Course not found' });
     }
 
-    res.json(course);
+    // If user is not logged in, return course without enrollment status
+    if (!userId) {
+      return res.json({
+        ...course.toObject(),
+        isEnrolled: false,
+        enrollmentId: null
+      });
+    }
+
+    // Check if user is enrolled in the course
+    const enrollment = await Enrollment.findOne({
+      student: userId,
+      course: courseId,
+      paymentStatus: 'Paid'
+    });
+
+    // Return course with enrollment status
+    res.json({
+      ...course.toObject(),
+      isEnrolled: !!enrollment,
+      enrollmentId: enrollment?._id || null
+    });
+
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch course', error });
+    console.error('Error in getCourseById:', error);
+    res.status(500).json({ message: 'Failed to fetch course', error: error.message });
   }
 };
 
