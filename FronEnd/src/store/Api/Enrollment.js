@@ -70,9 +70,6 @@ export const enrollmentApi = createApi({
         url: `/${courseId}`,
         method: "POST"
       }),
-      onQueryStarted: async (data, { queryFulfilled }) => {
-        console.log(data);
-      },
       invalidatesTags: ['Enrollment']
     })
   }),
