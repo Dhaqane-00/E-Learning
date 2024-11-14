@@ -53,35 +53,17 @@ function Register() {
         e.preventDefault();
         const formDataWithImage = new FormData();
 
-
-        const registerUserDto = {
-            name: formData.name,
-            email: formData.email,
-            password: formData.password,
-        }
-
-        formDataWithImage.append("registerUserDto", JSON.stringify(registerUserDto));
-
+        formDataWithImage.append("name", formData.name);
+        formDataWithImage.append("email", formData.email);
+        formDataWithImage.append("password", formData.password);
 
         if (formData.profileImage) {
-            formDataWithImage.append("file", formData.profileImage)
+            formDataWithImage.append("profileImage", formData.profileImage);
         }
 
-
-        console.log(formDataWithImage);
-
-
-
-
-
         try {
-
             const response = await createUser(formDataWithImage);
-
             const data = response.data;
-
-            console.log(data);
-
 
             toast.success("Registered Successfully!", {
                 position: "top-right",
@@ -89,13 +71,9 @@ function Register() {
                     background: "#1C1210",
                     color: "#E5E6E6",
                 }
+            });
 
-            })
-
-            // Successfully registered, navigate to home
-
-            navigate("/");
-
+            navigate("/login");
         } catch (error) {
             if (error.response && error.response.data) {
                 const errorMessage = error.response.data;
