@@ -16,7 +16,7 @@ function FullCoursePage() {
         course?.enrollmentId,
         { skip: !course?.isEnrolled || !course?.enrollmentId }
     );
-
+    
     if (courseLoading) {
         return (
             <div className='min-h-screen bg-bgOne flex justify-center items-center'>
@@ -24,7 +24,6 @@ function FullCoursePage() {
             </div>
         );
     }
-
     if (!course) {
         return (
             <div className='min-h-screen bg-bgOne text-white flex justify-center items-center'>
@@ -32,7 +31,6 @@ function FullCoursePage() {
             </div>
         );
     }
-
     return (
         <div className='bg-bgOne text-white px-4 sm:px-24 pb-10 min-h-screen'>
             <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 pt-8'>
