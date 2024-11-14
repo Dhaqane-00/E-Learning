@@ -53,7 +53,6 @@ function Home() {
             onClick={() => handleCourseCardClick(course)}
             onClickView={() => handleViewClick(course)}
             showCTA={true}
-            text={coursesData.message === "Continue Learning" ? "Continue Learning" : "Enroll"}
         />
     );
 

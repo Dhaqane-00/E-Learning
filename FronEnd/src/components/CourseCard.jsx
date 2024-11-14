@@ -44,18 +44,6 @@ function CourseCard({
                         {price === 0 ? 'Free' : `$${price}`}
                     </span>
                 </div>
-
-                {/* Action Buttons */}
-                {showCTA && (
-                    <div className="flex gap-2 mt-4">
-                        <button
-                            onClick={onClick}
-                            className="px-4 py-2 bg-green text-bgOne rounded-full font-semibold hover:bg-opacity-90 transition-colors text-sm"
-                        >
-                            {text}
-                        </button>
-                    </div>
-                )}
             </div>
         </div>
     );
