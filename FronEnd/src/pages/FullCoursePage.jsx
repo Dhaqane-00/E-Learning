@@ -16,92 +16,20 @@ function FullCoursePage() {
     const { courseId } = useParams();
 
     const { data: course, isLoading, error } = useGetCourseByIdQuery(courseId);
+    console.log("course", course);
+    
     const [createEnrollment] = useCreateEnrollmentMutation();
     const [isEnrolling, setIsEnrolling] = useState(false);
 
     // Get logged-in user ID from cookies
     const loggedInUserId = JSON.parse(Cookies.get('user'))?._id;
+    console.log("loggedInUserId", loggedInUserId);
 
     useEffect(() => {
         if (ref.current) {
             ref.current.scrollIntoView();
         }
     }, []);
-
-
-    async function handleVoteClick(courseId) {
-        try {
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/course/${courseId}/vote-course`);
-
-            const data = response.data;
-
-            if (response.status == 200) {
-                toast.success("Successfully Voted!", {
-                    position: "top-right",
-                    style: {
-                        background: "#1C1210",
-                        color: "#E5E6E6",
-                    }
-                })
-            }
-
-
-        }
-
-        catch (error) {
-            if (error.response && error.response.data) {
-                console.log(error.response.data);
-
-                toast.error("Already Voted!", {
-                    position: "top-right",
-                    style: {
-                        background: "#1C1210",
-                        color: "#E5E6E6",
-                    }
-                })
-
-            }
-        }
-
-
-    }
-
-
-    async function handleEndCourse() {
-        try {
-            setEndCourseIsLoading(true)
-
-            toast.success("Course removed", {
-                position: "top-right",
-                style: {
-                    background: "#1C1210",
-                    color: "#E5E6E6",
-                }
-
-            })
-
-            await axios.post(`${import.meta.env.VITE_BASE_URL}/course/${courseId}/end-course`)
-            navigate("/")
-
-        }
-        catch (e) {
-
-            toast.error("Last action failed", {
-                position: "top-right",
-                style: {
-                    background: "#1C1210",
-                    color: "#E5E6E6",
-                }
-
-            })
-            console.log(e);
-
-        }
-        finally {
-            setEndCourseIsLoading(false)
-        }
-
-    }
 
     const handleEnrollCourse = async () => {
         try {
@@ -142,6 +70,8 @@ function FullCoursePage() {
         }
 
         if (course?.instructor?._id === loggedInUserId) {
+            console.log("course?.instructor?._id", course?.instructor?._id);
+            
             return (
                 <PrimaryButton
                     text="Edit Course"

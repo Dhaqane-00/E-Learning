@@ -1,5 +1,6 @@
 const { Course, User, Enrollment } = require('../model/Model');
 const bunnyStorage = require('../utils/bunnycdn');
+const jwt = require('jsonwebtoken');
 // Create a new course
 exports.createCourse = async (req, res) => {
   try {
@@ -140,7 +141,17 @@ exports.getAllCoursesByUser = async (req, res) => {
 exports.getCourseById = async (req, res) => {
   try {
     const courseId = req.params.id;
-    const userId = req.user?.userId; // Optional chaining as user might not be logged in
+    // Get userId from authorization header
+    const authHeader = req.headers.authorization;
+    let userId = null;
+    
+    if (authHeader) {
+      const token = authHeader.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      userId = decoded.userId;
+    }
+    
+    console.log("userId", userId);
 
     // Get course with instructor details and modules
     const course = await Course.findById(courseId)
