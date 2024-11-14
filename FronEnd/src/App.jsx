@@ -16,6 +16,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import { Toaster } from 'react-hot-toast'
 import CoursesUploadedByUser from './pages/CoursesUploadedByUser.jsx'
 import ErrorPage from './pages/ErrorPage.jsx'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
   return (
@@ -44,11 +45,11 @@ function App() {
           />
 
           <Route 
-            path='course/:courseId' 
+            path='course/:id' 
             element={
-              <ProtectedRoute>
+              <ErrorBoundary>
                 <FullCoursePage />
-              </ProtectedRoute>
+              </ErrorBoundary>
             } 
           />
 

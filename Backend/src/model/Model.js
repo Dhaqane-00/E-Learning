@@ -55,13 +55,31 @@ const quizSchema = new mongoose.Schema({
 const enrollmentSchema = new mongoose.Schema({
   student: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
-  progress: { type: Number, default: 0 },
-  completedLessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
-  quizScores: [{
-    lesson: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' },
-    score: Number
+  progress: { 
+    type: Number, 
+    default: 0,
+    min: 0,
+    max: 100 
+  },
+  completedLessons: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Lesson' 
   }],
-  paymentStatus: { type: String, enum: ['Pending', 'Paid' ,], default: 'Pending' }
+  lastAccessedLesson: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lesson'
+  },
+  moduleProgress: [{
+    module: { type: mongoose.Schema.Types.ObjectId, ref: 'Module' },
+    completedLessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
+    progress: { type: Number, default: 0 }
+  }],
+  paymentStatus: { type: String, enum: ['Pending', 'Paid' ,], default: 'Pending' },
+  status: {
+    type: String,
+    enum: ['not-started', 'in-progress', 'completed'],
+    default: 'not-started'
+  }
 }, { timestamps: true });
 
 // Models

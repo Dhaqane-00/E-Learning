@@ -6,13 +6,16 @@ const BASE_URL = "http://localhost:3000/api/courses"
 
 export const courseApi = createApi({
   reducerPath: "courseApi",
-  baseQuery: fetchBaseQuery({ baseUrl: BASE_URL, headers: {
-    "Authorization": `Bearer ${Cookies.get("token")}`
-  }}),
-  keepUnusedDataFor: 300,
-  refetchOnMountOrArgChange: true,
-  refetchOnFocus: true,
-  refetchOnReconnect: true,
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: BASE_URL,
+    prepareHeaders: (headers) => {
+      const token = Cookies.get("token");
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    }
+  }),
   endpoints: (builder) => ({
     getUserCourses: builder.query({
         query: () =>({
@@ -22,9 +25,6 @@ export const courseApi = createApi({
     }),
     getAllCourses: builder.query({
         query: () =>({
-            headers: {
-              "Authorization": `Bearer ${Cookies.get("token")}`
-            },
             url: "/",
             method: "GET",
         }),
@@ -34,6 +34,15 @@ export const courseApi = createApi({
             url: `/${id}`,
             method: "GET",
         }),
+        transformResponse: (response) => {
+            if (!response) {
+                throw new Error('Course not found');
+            }
+            return response;
+        },
+        transformErrorResponse: (response) => {
+            return response.data?.message || 'An error occurred';
+        }
     }),
   }),
 });

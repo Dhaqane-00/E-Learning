@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 function CourseCard({
     title,
@@ -13,6 +14,14 @@ function CourseCard({
     showCTA,
     text
 }) {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        if (course?._id) {
+            navigate(`/course/${course._id}`);
+        }
+    };
+
     return (
         <div className="bg-bgTwo p-4 rounded-lg border border-border" onClick={onClickView}>
             {/* Course Image */}
