@@ -8,6 +8,7 @@ import { ThreeDot } from 'react-loading-indicators';
 import { useGetCourseByIdQuery } from '../store/Api/Course';
 import Cookies from 'js-cookie';
 import { useCreateEnrollmentMutation } from '../store/Api/Enrollment';
+import CourseModules from '../components/CourseModules';
 
 function FullCoursePage() {
 
@@ -85,7 +86,7 @@ function FullCoursePage() {
             return (
                 <PrimaryButton
                     text="Continue Learning"
-                    onClick={() => navigate(`/course/learn/${course.enrollmentId}`)}
+                    onClick={() => navigate()}
                     classname="mt-6"
                 />
             );
@@ -154,7 +155,7 @@ function FullCoursePage() {
                 {course?.modules?.length > 0 ? (
                     <div className='mt-8'>
                         <h2 className='text-2xl font-bold mb-4'>Course Content</h2>
-                        {/* Add your modules list here */}
+                        <CourseModules modules={course?.modules} isEnrolled={course?.isEnrolled} />
                     </div>
                 ) : (
                     <p className='text-gray mt-8'>No modules available yet.</p>
