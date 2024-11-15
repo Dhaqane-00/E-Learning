@@ -21,7 +21,7 @@ function Navbar() {
     const [showNotificationDiv, setShowNotificationDiv] = useState(true);
     
     const token = Cookies.get('token');
-    const userString = localStorage.getItem('user');
+    const userString = Cookies.get('user');
     const user = userString ? JSON.parse(userString) : null;
     
 
@@ -83,7 +83,15 @@ function Navbar() {
                         <ProtectedRoute>
                             <div className="flex items-center gap-2">
                                 <Link to="/my-profile" className='pr-2 text-white font-medium flex items-center gap-1'>
-                                    <MdAccountCircle size={23} />
+                                    {user?.profileImage ? (
+                                        <img 
+                                            src={user.profileImage} 
+                                            alt="Profile" 
+                                            className="w-6 h-6 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        <MdAccountCircle size={23} />
+                                    )}
                                     <span>{user?.name}</span>
                                 </Link>
                             </div>
@@ -148,7 +156,15 @@ function Navbar() {
                             <ProtectedRoute>
                                 <div className='flex gap-3 justify-center items-center'>
                                     <Link to="/my-profile" className="flex items-center gap-2">
-                                        <MdAccountCircle size={23} />
+                                        {user?.profileImage ? (
+                                            <img 
+                                                src={user.profileImage} 
+                                                alt="Profile" 
+                                                className="w-6 h-6 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <MdAccountCircle size={23} />
+                                        )}
                                         <span>{user?.name}</span>
                                     </Link>
                                     <button onClick={handleLogout}>Logout</button>

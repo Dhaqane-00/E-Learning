@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from '../config/axiosConfig';
 import Input from '../components/formComponents/Input'
@@ -14,28 +14,32 @@ import { FreeMode } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 // import required modules
+
+import { useGetEnrolledCoursesQuery, useGetUploadedCoursesQuery, useUpdateUserProfileMutation, useGetUserProfileQuery } from '../store/Api/User';
 
 
 function MyProfile() {
 
     const navigate = useNavigate();
 
-    const loggedInUser = useSelector(registerUser)
+    const loggedInUser = JSON.parse(Cookies.get("user") || '{}');
     const { isMobile } = useContext(WindowWidthContext)
 
-    const [enrolledCourses, setEnrolledCourses] = useState({});
-
-    const [uploadedCourses, setUploadedCourses] = useState({});
+    const { data: userProfile } = useGetUserProfileQuery();
+    const { data: enrolledCourses = {}, isLoading: isEnrolledLoading } = useGetEnrolledCoursesQuery();
+    const { data: uploadedCourses = {}, isLoading: isUploadedLoading } = useGetUploadedCoursesQuery();
+    const [updateProfile, { isLoading: isUpdating }] = useUpdateUserProfileMutation();
 
     const [enrolledOrUpdated, setEnrolledOrUpdated] = useState("enrolled");
 
 
     const [formData, setFormData] = useState({
-        email: "",
+        email: userProfile?.email || "",
         password: "",
-        name: "",
-        bio: ""
+        name: userProfile?.name || ""
     });
 
 
@@ -86,36 +90,6 @@ function MyProfile() {
 
 
 
-    //fetching the courses enrolled by the user
-    useEffect(() => {
-
-        async function getEnrolledCourses() {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/course/enrolled-courses`)
-
-                setEnrolledCourses(response.data)
-
-            }
-            catch (e) {
-                console.log(e);
-            }
-        }
-        getEnrolledCourses();
-
-        async function getUploadedCourses() {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/course/uploaded-courses`)
-
-                setUploadedCourses(response.data);
-            }
-            catch (e) {
-                console.log(e);
-            }
-        }
-        getUploadedCourses();
-    }, [])
-
-
     console.log(enrolledCourses);
 
 
@@ -137,25 +111,28 @@ function MyProfile() {
 
             <div className='w-full sm:w-1/2 flex flex-col items-center gap-6 '>
 
-                <div className='flex w-full sm:w-1/2 justify-start  items-center gap-3'>
+                <div className='flex w-full sm:w-1/2 justify-start items-center gap-3'>
                     <SecondaryButton
                         text={"Enrolled"}
                         onClick={() => handleSetEnrolledOrUpdated("enrolled")}
                         classname={`text-gray rounded-md ${enrolledOrUpdated === 'enrolled' ? "border-green" : "border-border"}`}
                     />
-                    <SecondaryButton
-                        text={"Uploaded"}
-                        onClick={() => handleSetEnrolledOrUpdated("uploaded")}
-                        classname={`text-gray  rounded-md ${enrolledOrUpdated === 'uploaded' ? 'border-green' : 'border-border'}`}
-                    />
+                    
+                    {loggedInUser.role === 'instructor' && (
+                        <SecondaryButton
+                            text={"Uploaded"}
+                            onClick={() => handleSetEnrolledOrUpdated("uploaded")}
+                            classname={`text-gray rounded-md ${enrolledOrUpdated === 'uploaded' ? 'border-green' : 'border-border'}`}
+                        />
+                    )}
 
-                    {
-                        isMobile && <SecondaryButton
+                    {isMobile && (
+                        <SecondaryButton
                             text={"Profile"}
                             onClick={() => handleSetEnrolledOrUpdated("profile")}
-                            classname={`text-gray  rounded-md ${enrolledOrUpdated === 'profile' ? 'border-green' : 'border-border'}`}
+                            classname={`text-gray rounded-md ${enrolledOrUpdated === 'profile' ? 'border-green' : 'border-border'}`}
                         />
-                    }
+                    )}
                 </div>
 
 
@@ -170,18 +147,12 @@ function MyProfile() {
                             <h2 className='uppercase text-white text-3xl sm:text-4xl font-semibold'>Enrolled <br /><span className='text-white text-5xl sm:text-6xl'>Courses.</span></h2>
                         </div>
 
-
-                        {
-                            isMobile &&
-                            <Swiper
-                                slidesPerView={1.2}
-                                spaceBetween={12}
-                                freeMode={true}
-
-                                modules={[FreeMode]}
-                                className="text-gray w-full cursor-move p-4"
-                            >
-
+                        {isEnrolledLoading ? (
+                            <div className='w-full text-center'>
+                                <ThreeDot color="#9CF57F" size="small" />
+                            </div>
+                        ) : (
+                            <>
                                 {
                                     Object.keys(enrolledCourses).map(key => {
                                         return <SwiperSlide key={key} >
@@ -198,9 +169,8 @@ function MyProfile() {
                                         </SwiperSlide>
                                     })
                                 }
-                            </Swiper>
-
-                        }
+                            </>
+                        )}
 
 
 
@@ -230,7 +200,7 @@ function MyProfile() {
 
 
                 {
-                    enrolledOrUpdated === "uploaded" &&
+                    enrolledOrUpdated === "uploaded" && loggedInUser.role === 'instructor' &&
 
                     <div className='w-full sm:w-1/2 text-white  items-start flex flex-col gap-4'>
 
@@ -238,16 +208,12 @@ function MyProfile() {
                             <h2 className='uppercase text-white text-3xl sm:text-4xl font-semibold'>Uploaded <br /><span className='text-white text-5xl sm:text-6xl'>Courses.</span></h2>
                         </div>
 
-                        {
-                            isMobile && <Swiper
-                                slidesPerView={1.2}
-                                spaceBetween={12}
-                                freeMode={true}
-
-                                modules={[FreeMode]}
-                                className="text-gray w-full cursor-move"
-                            >
-
+                        {isUploadedLoading ? (
+                            <div className='w-full text-center'>
+                                <ThreeDot color="#9CF57F" size="small" />
+                            </div>
+                        ) : (
+                            <>
                                 {
                                     Object.keys(uploadedCourses).map(key => {
                                         return <SwiperSlide key={key} >
@@ -264,8 +230,8 @@ function MyProfile() {
                                         </SwiperSlide>
                                     })
                                 }
-                            </Swiper>
-                        }
+                            </>
+                        )}
 
 
 
@@ -340,22 +306,6 @@ function MyProfile() {
 
                             />
                             {errors && <p className='mt-2 text-xs text-gray'>{errors.password}</p>}
-
-                        </div>
-
-                        <div className='h-24 w-full '>
-                            <Input
-                                totalWidth={"w-full"}
-                                className={""}
-                                type={"text"}
-                                name={"bio"}
-                                value={formData.bio}
-                                placeholder={"your bio"}
-                                onChange={(e) => handleInputChange(e)}
-
-                            />
-                            {errors && <p className='mt-2 text-xs text-gray'>{errors.bio}</p>}
-
 
                         </div>
 
@@ -437,19 +387,6 @@ function MyProfile() {
                         name={"password"}
                         value={formData.password}
                         placeholder={"your password"}
-                        onChange={(e) => handleInputChange(e)}
-                    />
-
-                </div>
-
-                <div className='h-24 w-1/2 '>
-                    <Input
-                        totalWidth={"w-full"}
-                        className={""}
-                        type={"text"}
-                        name={"bio"}
-                        value={formData.bio}
-                        placeholder={"your bio"}
                         onChange={(e) => handleInputChange(e)}
                     />
 

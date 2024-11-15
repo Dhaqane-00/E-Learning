@@ -2,12 +2,19 @@ import React, { useState } from 'react';
 import { useCreateEnrollmentMutation } from '../store/Api/Enrollment';
 import { FiShoppingCart, FiCheck } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
 
 const EnrollButton = ({ courseId, price, isEnrolled }) => {
     const [createEnrollment, { isLoading }] = useCreateEnrollmentMutation();
     const [error, setError] = useState(null);
 
     const handleEnroll = async () => {
+        const token = Cookies.get('token');
+        if (!token) {
+            toast.error('Please login to enroll in this course');
+            return;
+        }
+
         try {
             toast.loading('Enrolling in course...', {
                 id: 'enrollmentLoading'

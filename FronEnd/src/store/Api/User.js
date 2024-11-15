@@ -1,17 +1,19 @@
-import { createApi , fetchBaseQuery } from "@reduxjs/toolkit/query";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import Cookies from "js-cookie";
 
 const BASE_URL = "http://localhost:3000/api/users"
 
-const token = Cookies.get("token");
-
 export const userApi = createApi({
     reducerPath: "UserApi",
     baseQuery: fetchBaseQuery({ 
-        baseUrl: BASE_URL, 
-        headers: {
-            Authorization: `Bearer ${token}`
-        } 
+        baseUrl: BASE_URL,
+        prepareHeaders: (headers) => {
+            const token = Cookies.get("token");
+            if (token) {
+                headers.set("Authorization", `Bearer ${token}`);
+            }
+            return headers;
+        }
     }),
     endpoints: (builder) => ({
         getUserProfile: builder.query({
@@ -19,12 +21,34 @@ export const userApi = createApi({
                 url: "/profile",
                 method: "GET",
             }),
-            onQueryStarted: async (data, { queryFulfilled }) => {
-                console.log(data);
-            }
-        })
+        }),
+        updateUserProfile: builder.mutation({
+            query: (formData) => ({
+                url: "/profile",
+                method: "PUT",
+                body: formData,
+            }),
+        }),
+        getEnrolledCourses: builder.query({
+            query: () => ({
+                url: "/enrollments",
+                method: "GET",
+            }),
+        }),
+        getUploadedCourses: builder.query({
+            query: () => ({
+                url: "/uploaded-courses",
+                method: "GET",
+            }),
+        }),
     })
-})
+});
 
+export const {
+    useGetUserProfileQuery,
+    useUpdateUserProfileMutation,
+    useGetEnrolledCoursesQuery,
+    useGetUploadedCoursesQuery
+} = userApi;
 
 export default userApi;
