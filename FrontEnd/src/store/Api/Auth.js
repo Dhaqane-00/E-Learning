@@ -20,7 +20,6 @@ const BASE_URL = "https://e-learning-backend-v1.vercel.app/api/";
 const authApi = createApi({
     baseQuery: fetchBaseQuery({ 
         baseUrl: BASE_URL,
-        credentials: 'include',
         prepareHeaders: (headers) => {
             const token = Cookies.get("token");
             if (token) {

@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import Cookies from "js-cookie";
 
-const BASE_URL = "http://localhost:3000/api/courses"
+const BASE_URL = "https://e-learning-backend-v1.vercel.app/api/courses"
+
 
 
 export const courseApi = createApi({

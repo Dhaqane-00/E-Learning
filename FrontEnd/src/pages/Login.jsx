@@ -156,10 +156,10 @@ function Login() {
                         >
                             <img 
                                 src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-                                alt="Google logo" 
+                                alt="Google logo"
                                 className="w-5 h-5"
                             />
-                            {isLoading ? 'Loading...' : 'Continue with Google'}
+                            {'Continue with Google'}
                         </button>
 
                         <div className='text-left mt-6 '>
