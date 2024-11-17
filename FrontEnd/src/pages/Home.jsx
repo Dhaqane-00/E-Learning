@@ -120,12 +120,12 @@ function Home() {
 
 
                 {/* ----------------- notification for mobile view ---------------- */}
-                {
+                {/* {
                     isMobile && isLoading && <div className='flex gap-2 text-xs items-center'>
                         <IoArrowForwardSharp className='text-green' />
                         <p className='text-gray'>Deployed on Render free tier, please be patient.</p>
                     </div>
-                }
+                } */}
 
 
             </div>
