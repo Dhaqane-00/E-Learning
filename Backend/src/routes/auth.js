@@ -15,16 +15,10 @@ router.get('/google/callback',
 
     res.cookie('token', token, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: false,
-      secure: true,
-      sameSite: 'lax',
     });
 
     res.cookie('user', JSON.stringify(user), {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: false,
-      secure: true,
-      sameSite: 'lax',
     });
 
     res.redirect(`${process.env.FRONTEND_URL}`);
