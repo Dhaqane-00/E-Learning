@@ -15,12 +15,19 @@ const setUser = (user) => {
     });
 };
 
-const BASE_URL = "http://localhost:3000/api/";
+const BASE_URL = "https://e-learning-backend-v1.vercel.app/api/";
 
 const authApi = createApi({
     baseQuery: fetchBaseQuery({ 
         baseUrl: BASE_URL,
-        
+        credentials: 'include',
+        prepareHeaders: (headers) => {
+            const token = Cookies.get("token");
+            if (token) {
+                headers.set("Authorization", `Bearer ${token}`);
+            }
+            return headers;
+        }
     }),
     endpoints: (builder) => ({
         // Existing endpoints
