@@ -80,7 +80,7 @@ const authApi = createApi({
                         setToken(result.data.token);
                         setUser(result.data.user);
                         
-                        window.location.href = '/';
+                        
                     } else {
                         console.error('Invalid response format:', result.data);
                     }
