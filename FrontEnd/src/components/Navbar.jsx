@@ -68,16 +68,6 @@ function Navbar() {
             // Mobile View
             <div className='bg-bgOne pb-20 w-full'>
                 <div className='fixed top-0 w-full flex h-16 z-50 gap-6 items-center justify-between px-4 bg-bgOne border-b border-border'>
-                    {showNotificationDiv && (
-                        <div className='bg-gradientForBg w-full text-center py-3'>
-                            <p className='text-bgOne'>This app is hosted on Render's free tier, so initial loading might take a few moments. Thank you for your patience!</p>
-                            <button
-                                className='absolute right-4 top-3 text-bgOne'
-                                onClick={handleNotificationDivClose}>
-                                <IoCloseSharp size={17} />
-                            </button>
-                        </div>
-                    )}
                     <Hamburger size={24} color='white' toggled={showNavbar} toggle={setShowNavbar} />
                     <Link to={"/"} className='font-bold bg-gradientForBg text-2xl bg-clip-text text-transparent'>BitByBit</Link>
                     
