@@ -19,10 +19,21 @@ require('dotenv').config();
 
 
 app.use(cookieParser());
-app.use(cors({
-  origin: [process.env.FRONTEND_URL, 'http://localhost:3000'],
-  credentials: true
-}));
+const corsOptions = {
+  origin: [
+    process.env.FRONTEND_URL,
+    'http://localhost:3000',
+    'https://accounts.google.com',
+    'https://play.google.com'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Set-Cookie'],
+  maxAge: 86400 // 24 hours
+};
+
+app.use(cors(corsOptions));
 
 const Host = 'localhost';
 
@@ -59,4 +70,12 @@ app.use(passport.initialize());
 const port = process.env.port || 3000;
 app.listen(port, Host, () => {
   console.log(`Server is running on port ${port}`);
+});
+
+app.use((req, res, next) => {
+  res.header('Content-Security-Policy', "default-src 'self' https://accounts.google.com https://play.google.com; img-src 'self' data: https: http:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com; style-src 'self' 'unsafe-inline';");
+  res.header('X-Content-Type-Options', 'nosniff');
+  res.header('X-Frame-Options', 'SAMEORIGIN');
+  res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
 });

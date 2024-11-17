@@ -11,7 +11,6 @@ router.get('/google',
 router.get('/google/callback',
   passport.authenticate('google', { session: false }),
   (req, res) => {
-    console.log(req.user);
     const { token, user } = req.user;
 
     // Set cookies with token and user info
