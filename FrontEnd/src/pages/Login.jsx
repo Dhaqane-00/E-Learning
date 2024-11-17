@@ -83,6 +83,14 @@ function Login() {
         }
     };
 
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        
+        if (token) {
+            handleGoogleCallback();
+        }
+    }, []);
 
     return (
         <div className='pt-12 sm:pb-1 bg-bgOne'>
