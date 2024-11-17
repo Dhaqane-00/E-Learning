@@ -14,14 +14,13 @@ const passport = require('passport');
 require('./src/config/passport-google');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+require('dotenv').config();
+
+
 
 app.use(cookieParser());
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://e-learningfrontend.vercel.app' ,'https://e-learning-backend-v1.vercel.app/'],
-  credentials: true,
-}));
+app.use(cors());
 
-const port = 3000;
 const Host = 'localhost';
 
 app.use(morgan('dev'));
@@ -54,7 +53,7 @@ app.use(passport.initialize());
 
 // Add the auth routes
 
-
+const port = process.env.port || 3000;
 app.listen(port, Host, () => {
   console.log(`Server is running on port ${port}`);
 });
