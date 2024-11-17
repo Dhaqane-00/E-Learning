@@ -3,3 +3,4 @@ node_modules/
 
 # Ignore all files in the .env file
 .env
+.vercel

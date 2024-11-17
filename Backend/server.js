@@ -16,7 +16,10 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://e-learningfrontend.vercel.app' ,'https://e-learning-backend-v1.vercel.app/'],
+  credentials: true,
+}));
 
 const port = 3000;
 const Host = 'localhost';
