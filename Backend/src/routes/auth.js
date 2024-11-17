@@ -13,21 +13,17 @@ router.get('/google/callback',
   (req, res) => {
     const { token, user } = req.user;
 
+    // Set cookies with token and user info
     res.cookie('token', token, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      domain: process.env.NODE_ENV === 'production' ? 'https://e-dhaqane.vercel.app' : 'localhost'
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 
     res.cookie('user', JSON.stringify(user), {
-      maxAge: 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      domain: process.env.NODE_ENV === 'production' ? 'https://e-dhaqane.vercel.app' : 'localhost'
+
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 
+    // Redirect to frontend with token
     res.redirect(`${process.env.FRONTEND_URL}`);
   }
 );
