@@ -14,6 +14,7 @@ import ProtectedRoute from './ProtectedRoute';
 
 function Navbar() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [showNavbar, setShowNavbar] = useState(false);
     const [hideNavbar, setHideNavbar] = useState(false);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -56,6 +57,18 @@ function Navbar() {
     useEffect(() => {
         setIsFullCoursePage(window.location.pathname.includes('/course/'));
     }, []);
+
+    // Add this useEffect to handle token from URL
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const urlToken = params.get('token');
+        
+        if (urlToken) {
+            Cookies.set('token', urlToken);
+            // Optionally remove the token from URL after storing it
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location, navigate]);
 
     const handleLogout = () => {
         Cookies.remove('token');
