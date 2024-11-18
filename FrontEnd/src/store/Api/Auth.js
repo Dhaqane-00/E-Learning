@@ -21,6 +21,8 @@ const authApi = createApi({
     baseQuery: fetchBaseQuery({ 
         baseUrl: BASE_URL,
         prepareHeaders: (headers) => {
+            console.log( 'headers', headers);
+            
             const token = Cookies.get("token");
             if (token) {
                 headers.set("Authorization", `Bearer ${token}`);
