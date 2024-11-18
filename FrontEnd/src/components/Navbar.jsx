@@ -62,12 +62,17 @@ function Navbar() {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const urlToken = params.get('token');
+        const urlUser = params.get('user');
         
         if (urlToken) {
             Cookies.set('token', urlToken);
-            // Optionally remove the token from URL after storing it
-            navigate(location.pathname, { replace: true });
         }
+        if (urlUser) {
+            Cookies.set('user', urlUser);
+        }
+
+            // Optionally remove the token from URL after storing it
+        navigate(location.pathname, { replace: true });
     }, [location, navigate]);
 
     const handleLogout = () => {
