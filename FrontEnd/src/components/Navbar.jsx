@@ -29,10 +29,8 @@ function Navbar() {
 
         if (urlToken) {
             Cookies.set('token', urlToken);
-            // Optionally remove the token from URL after storing it
-            navigate(location.pathname, { replace: true });
         }
-    }, [location, navigate]);
+    }, [location]);
 
     const token = Cookies.get('token');
     const userString = Cookies.get('user');
