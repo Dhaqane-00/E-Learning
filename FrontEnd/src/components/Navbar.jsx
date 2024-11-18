@@ -26,11 +26,12 @@ function Navbar() {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const urlToken = params.get('token');
-
+        
         if (urlToken) {
             Cookies.set('token', urlToken);
+            navigate(location.pathname, { replace: true });
         }
-    }, [location]);
+    }, [location, navigate]);
 
     const token = Cookies.get('token');
     const userString = Cookies.get('user');
