@@ -21,8 +21,13 @@ function Navbar() {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isFullCoursePage, setIsFullCoursePage] = useState(false);
     const [showNotificationDiv, setShowNotificationDiv] = useState(true);
+    const [token, setToken] = useState(Cookies.get('token'));
+    const [user, setUser] = useState(() => {
+        const userString = Cookies.get('user');
+        return userString ? JSON.parse(userString) : null;
+    });
 
-    // Add this useEffect to handle token from URL
+    // Update the URL token handler
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const urlToken = params.get('token');
@@ -33,21 +38,14 @@ function Navbar() {
                 const userData = JSON.parse(decodeURIComponent(userDataString));
                 Cookies.set('token', urlToken);
                 Cookies.set('user', JSON.stringify(userData));
+                setToken(urlToken);
+                setUser(userData);
                 navigate('/', { replace: true });
             } catch (error) {
                 console.error('Error parsing user data:', error);
             }
         }
     }, [location, navigate]);
-
-    // Move token and user declarations inside useEffect to ensure they're up to date
-    useEffect(() => {
-        const token = Cookies.get('token');
-        const userString = Cookies.get('user');
-        const user = userString ? JSON.parse(userString) : null;
-        console.log(user);
-        console.log(token);
-    }, []);
 
     const handleNotificationDivClose = () => {
         setShowNotificationDiv(false);
