@@ -11,6 +11,7 @@ import Cookies from 'js-cookie';
 import ProtectedRoute from './ProtectedRoute';
 
 
+
 function Navbar() {
     const navigate = useNavigate();
     const [showNavbar, setShowNavbar] = useState(false);
