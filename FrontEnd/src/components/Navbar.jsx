@@ -26,19 +26,28 @@ function Navbar() {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const urlToken = params.get('token');
+        const userDataString = params.get('userData');
         
-        if (urlToken) {
-            Cookies.set('token', urlToken);
-            navigate(location.pathname, { replace: true });
+        if (urlToken && userDataString) {
+            try {
+                const userData = JSON.parse(decodeURIComponent(userDataString));
+                Cookies.set('token', urlToken);
+                Cookies.set('user', JSON.stringify(userData));
+                navigate('/', { replace: true });
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+            }
         }
     }, [location, navigate]);
 
-    const token = Cookies.get('token');
-    const userString = Cookies.get('user');
-    const user = userString ? JSON.parse(userString) : null;
-    console.log(user);
-    console.log(token);
-
+    // Move token and user declarations inside useEffect to ensure they're up to date
+    useEffect(() => {
+        const token = Cookies.get('token');
+        const userString = Cookies.get('user');
+        const user = userString ? JSON.parse(userString) : null;
+        console.log(user);
+        console.log(token);
+    }, []);
 
     const handleNotificationDivClose = () => {
         setShowNotificationDiv(false);
