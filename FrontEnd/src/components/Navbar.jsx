@@ -31,15 +31,11 @@ function Navbar() {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const urlToken = params.get('token');
-        const userDataString = params.get('user');
         
-        if (urlToken && userDataString) {
+        if (urlToken) {
             try {
-                const userData = JSON.parse(decodeURIComponent(userDataString));
                 Cookies.set('token', urlToken);
-                Cookies.set('user', JSON.stringify(userData));
                 setToken(urlToken);
-                setUser(userData);
                 navigate('/', { replace: true });
             } catch (error) {
                 console.error('Error parsing user data:', error);
