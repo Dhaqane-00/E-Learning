@@ -34,7 +34,6 @@ router.get('/google/callback',
     // Include token in redirect URL as fallback
     const redirectUrl = new URL(process.env.FRONTEND_URL);
     redirectUrl.searchParams.append('token', token);
-    redirectUrl.searchParams.append('user', JSON.stringify(user));
 
     res.redirect(redirectUrl.toString());
   }

@@ -21,13 +21,25 @@ function Navbar() {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isFullCoursePage, setIsFullCoursePage] = useState(false);
     const [showNotificationDiv, setShowNotificationDiv] = useState(true);
-    
+
+    // Add this useEffect to handle token from URL
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const urlToken = params.get('token');
+
+        if (urlToken) {
+            Cookies.set('token', urlToken);
+            // Optionally remove the token from URL after storing it
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location, navigate]);
+
     const token = Cookies.get('token');
     const userString = Cookies.get('user');
     const user = userString ? JSON.parse(userString) : null;
     console.log(user);
     console.log(token);
-    
+
 
     const handleNotificationDivClose = () => {
         setShowNotificationDiv(false);
@@ -58,23 +70,6 @@ function Navbar() {
         setIsFullCoursePage(window.location.pathname.includes('/course/'));
     }, []);
 
-    // Add this useEffect to handle token from URL
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const urlToken = params.get('token');
-        const urlUser = params.get('user');
-        
-        if (urlToken) {
-            Cookies.set('token', urlToken);
-        }
-        if (urlUser) {
-            Cookies.set('user', urlUser);
-        }
-
-            // Optionally remove the token from URL after storing it
-        navigate(location.pathname, { replace: true });
-    }, [location, navigate]);
-
     const handleLogout = () => {
         Cookies.remove('token');
         Cookies.remove('user');
@@ -89,15 +84,15 @@ function Navbar() {
                 <div className='fixed top-0 w-full flex h-16 z-50 gap-6 items-center justify-between px-4 bg-bgOne border-b border-border'>
                     <Hamburger size={24} color='white' toggled={showNavbar} toggle={setShowNavbar} />
                     <Link to={"/"} className='font-bold bg-gradientForBg text-2xl bg-clip-text text-transparent'>BitByBit</Link>
-                    
+
                     {token ? (
                         <ProtectedRoute>
                             <div className="flex items-center gap-2">
                                 <Link to="/my-profile" className='pr-2 text-white font-medium flex items-center gap-1'>
                                     {user?.profileImage ? (
-                                        <img 
-                                            src={user.profileImage} 
-                                            alt="Profile" 
+                                        <img
+                                            src={user.profileImage}
+                                            alt="Profile"
                                             className="w-6 h-6 rounded-full object-cover"
                                         />
                                     ) : (
@@ -123,7 +118,7 @@ function Navbar() {
                             <Link to="/contributors" className='text-white'>Contributors</Link>
                             <Link to="/about" className='text-white'>About</Link>
                             <Link to="/vote-resources" className='text-white'>Vote Resources</Link>
-                            
+
                             {token && (
                                 <ProtectedRoute>
                                     <div className="flex flex-col gap-4">
@@ -168,9 +163,9 @@ function Navbar() {
                                 <div className='flex gap-3 justify-center items-center'>
                                     <Link to="/my-profile" className="flex items-center gap-2">
                                         {user?.profileImage ? (
-                                            <img 
-                                                src={user.profileImage} 
-                                                alt="Profile" 
+                                            <img
+                                                src={user.profileImage}
+                                                alt="Profile"
                                                 className="w-6 h-6 rounded-full object-cover"
                                             />
                                         ) : (
