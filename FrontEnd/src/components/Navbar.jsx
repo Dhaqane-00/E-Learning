@@ -26,7 +26,7 @@ function Navbar() {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const urlToken = params.get('token');
-        const userDataString = params.get('userData');
+        const userDataString = params.get('user');
         
         if (urlToken && userDataString) {
             try {
