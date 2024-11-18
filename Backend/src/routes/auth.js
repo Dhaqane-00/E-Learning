@@ -16,19 +16,13 @@ router.get('/google/callback',
     // Set token cookie
     res.cookie('token', token, {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: true,
       sameSite: 'none',
-      path: '/'
     });
 
     // Set user cookie
     res.cookie('user', JSON.stringify(user), {
       maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: false,
-      secure: true,
       sameSite: 'none',
-      path: '/'
     });
 
     // Include token in redirect URL as fallback
