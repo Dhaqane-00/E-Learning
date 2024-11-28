@@ -82,6 +82,20 @@ const enrollmentSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+// Payment Schema
+const paymentSchema = new mongoose.Schema({
+  student: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+  amount: { type: Number, required: true },
+  currency: { type: String, default: 'USD' },
+  stripePaymentId: { type: String, required: true },
+  status: { 
+    type: String, 
+    enum: ['pending', 'succeeded', 'failed'], 
+    default: 'pending' 
+  }
+}, { timestamps: true });
+
 // Models
 const User = mongoose.model('User', userSchema);
 const Course = mongoose.model('Course', courseSchema);
@@ -89,5 +103,6 @@ const Module = mongoose.model('Module', moduleSchema);
 const Lesson = mongoose.model('Lesson', lessonSchema);
 const Quiz = mongoose.model('Quiz', quizSchema);
 const Enrollment = mongoose.model('Enrollment', enrollmentSchema);
+const Payment = mongoose.model('Payment', paymentSchema);
 
-module.exports = { User, Course, Module, Lesson, Quiz, Enrollment };
+module.exports = { User, Course, Module, Lesson, Quiz, Enrollment, Payment };
