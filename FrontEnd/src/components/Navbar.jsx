@@ -85,7 +85,7 @@ function Navbar() {
             <div className='bg-bgOne pb-20 w-full'>
                 <div className='fixed top-0 w-full flex h-16 z-50 gap-6 items-center justify-between px-4 bg-bgOne border-b border-border'>
                     <Hamburger size={24} color='white' toggled={showNavbar} toggle={setShowNavbar} />
-                    <Link to={"/"} className='font-bold bg-gradientForBg text-2xl bg-clip-text text-transparent'>BitByBit</Link>
+                    <Link to={"/"} className='font-bold bg-gradientForBg text-2xl bg-clip-text text-transparent'>E-Dhaqane</Link>
 
                     {token ? (
                         <ProtectedRoute>
@@ -149,7 +149,7 @@ function Navbar() {
                 )}
                 <div className='w-full flex py-4'>
                     <div className='w-1/4 flex justify-center items-center'>
-                        <Link to="/" className='font-bold bg-gradientForBg text-2xl bg-clip-text text-transparent'>BitByBit</Link>
+                        <Link to="/" className='font-bold bg-gradientForBg text-2xl bg-clip-text text-transparent'>E-Dhaqane</Link>
                     </div>
 
                     <div className='w-2/4 flex justify-center items-center gap-8'>
